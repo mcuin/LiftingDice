@@ -39,7 +39,7 @@ kotlin {
 
 android {
     namespace = "com.cuinsolutions.liftingdice"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         minSdk = 28
     }

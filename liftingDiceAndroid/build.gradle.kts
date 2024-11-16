@@ -2,15 +2,16 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.google.services)
 }
 
 android {
     namespace = "com.cuinsolutions.liftingdice.android"
-    compileSdk = 34
+    compileSdk = 35
     defaultConfig {
         applicationId = "com.cuinsolutions.liftingdice.android"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
@@ -42,5 +43,8 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     implementation(libs.compose.material3)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.play.services.ads)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.databse)
     debugImplementation(libs.compose.ui.tooling)
 }
