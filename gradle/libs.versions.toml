@@ -7,6 +7,18 @@ androidx-activityCompose = "1.9.3"
 googleServices = "4.4.2"
 firebaseBom = "33.6.0"
 playServicesAds = "23.5.0"
+serialization = "2.0.20"
+gitliveFirebase = "2.1.0"
+gitliveFirebaseRealtimeDatabase = "2.1.0"
+jsonSerialization = "1.7.3"
+coroutinesCore = "1.8.0"
+koinCore = "4.0.0"
+koinAndroid = "4.0.0"
+navigationRuntimeKtx = "2.8.4"
+navigationCompose = "2.8.4"
+ksp = "2.0.21-1.0.28"
+koinAnnotations = "1.4.0"
+koinCompiler = "1.4.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -19,6 +31,18 @@ compose-material3 = { module = "androidx.compose.material3:material3", version.r
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-databse = { module = "com.google.firebase:firebase-database" }
 play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
+gitlive-firebase-common = { module = "dev.gitlive:firebase-common", version.ref = "gitliveFirebase" }
+gitlive-firebase-database = { module = "dev.gitlive:firebase-database", version.ref = "gitliveFirebaseRealtimeDatabase" }
+json-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "jsonSerialization" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutinesCore" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinCore" }
+koin-test = { module = "io.insert-koin:koin-test", version.ref = "koinCore" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndroid" }
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+koin-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinCore" }
+koin-annotations = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotations" }
+koin-compiler = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinCompiler" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -28,3 +52,5 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinCocoapods = { id = "org.jetbrains.kotlin.native.cocoapods", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+seraliziation = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "serialization" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

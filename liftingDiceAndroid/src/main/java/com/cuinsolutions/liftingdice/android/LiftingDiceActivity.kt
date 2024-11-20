@@ -8,18 +8,35 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.cuinsolutions.liftingdice.Greeting
+import com.cuinsolutions.liftingdice.FirebaseDataSource
+import com.cuinsolutions.liftingdice.android.utils.AndroidModules
+import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 
-class MainActivity : ComponentActivity() {
+class LiftingDiceActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val backgroundScope = CoroutineScope(Dispatchers.IO)
+        backgroundScope.launch {
+            // Initialize the Google Mobile Ads SDK on a background thread.
+            MobileAds.initialize(this@LiftingDiceActivity) {}
+        }
+
+
+
         setContent {
-            MyApplicationTheme {
+            LiftingDiceTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    GreetingView(Greeting().greet())
+                    LiftingDiceAppScreen()
                 }
             }
         }
@@ -34,7 +51,7 @@ fun GreetingView(text: String) {
 @Preview
 @Composable
 fun DefaultPreview() {
-    MyApplicationTheme {
+    LiftingDiceTheme {
         GreetingView("Hello, Android!")
     }
 }
