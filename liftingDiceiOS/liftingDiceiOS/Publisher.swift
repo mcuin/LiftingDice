@@ -9,50 +9,43 @@
 import liftingDiceShared
 import Combine
 
-extension KotlinThrowable: Error {}
+func flow<T>(_ flowAdapter: FlowWrapper<T>) -> AnyPublisher<T, KotlinError> {
+//    return Deferred<Publishers.HandleEvents<PassthroughSubject<T, KotlinError>>> {
+        let subject = PassthroughSubject<T, KotlinError>()
+        let job = flowAdapter.collect { (item) in
+            subject.send(item)
+        } onCompletion: {_ in
+            subject.send(completion: .finished)
+        }
+        return subject.handleEvents(receiveCancel: {
+            flowAdapter.cancel()
+        }).eraseToAnyPublisher()
+//    }.eraseToAnyPublisher()
+}
 
-class FlowPublisher<T: AnyObject>: Publisher {
-    typealias Output = T
-    typealias Failure = KotlinThrowable
-    
-    private let wrappedFlow: FlowWrapper<T>
-    
-    init(wrappedFlow: FlowWrapper<T>) {
-        self.wrappedFlow = wrappedFlow
-    }
-    
-    func receive<S>(subscriber: S) where S : Subscriber, KotlinThrowable == S.Failure, T == S.Input {
-        let subscription = FlowSubscription(wrappedFlow: wrappedFlow)
-        
-        subscriber.receive(subscription: subscription)
-        
-        wrappedFlow.collect { value in
-           let demand: Subscribers.Demand = subscriber.receive(value)
-           // Dealing with demand is left as exercise for the reader
-        } onCompletion: { throwable in
-            subscriber.receive(completion: throwable == nil ? .finished : .failure(throwable!))
-        }
-    }
-    
-    class FlowSubscription: Subscription {
-        
-        private let wrappedFlow: FlowWrapper<T>
-        
-        init(wrappedFlow: FlowWrapper<T>) {
-            self.wrappedFlow = wrappedFlow
-        }
-        
-        func request(_ demand: Subscribers.Demand) {
-            // Dealing with demand is left as exercise for the reader
-        }
-        
-        //Progates the cancel
-        func cancel() {
-            wrappedFlow.cancel()
-        }
+class PublishedFlow<T> : ObservableObject {
+    @Published
+    var output: T
+
+    init<E>(_ publisher: AnyPublisher<T, E>, defaultValue: T) {
+        output = defaultValue
+
+        publisher
+            .replaceError(with: defaultValue)
+            .compactMap { $0 }
+            .receive(on: DispatchQueue.main)
+            .assign(to: &$output)
     }
 }
 
-func flow<T>(_ wrapper: FlowWrapper<T>) -> FlowPublisher<T> {
-    return FlowPublisher(wrappedFlow: wrapper)
+class KotlinError: LocalizedError {
+    let throwable: KotlinThrowable
+    init(_ throwable: KotlinThrowable) {
+        self.throwable = throwable
+    }
+    var errorDescription: String? {
+        // swiftlint:disable implicit_getter
+        get { throwable.message }
+        // swiftlint:enable implicit_getter
+    }
 }

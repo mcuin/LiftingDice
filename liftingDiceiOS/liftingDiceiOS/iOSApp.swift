@@ -7,7 +7,7 @@ import liftingDiceShared
 struct iOSApp: App {
     
     init() {
-        KoinModuleKt.doInitKoin()
+        FirebaseHelperKt.doInitKoin()
         FirebaseApp.configure()
         GADMobileAds.sharedInstance().start(completionHandler: nil)
     }

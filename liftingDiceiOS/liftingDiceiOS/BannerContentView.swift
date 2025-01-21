@@ -10,11 +10,30 @@ import Foundation
 import GoogleMobileAds
 import SwiftUI
 
+struct BannerContentView: View {
+    
+    let adUnitId: String
+    
+    init(adUnitId: String = "ca-app-pub-3940256099942544/2934735716") {
+        self.adUnitId = adUnitId
+    }
+    
+    var body: some View {
+        GeometryReader { geometry in
+            BannerView(GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(geometry.size.width), adUnitId: adUnitId)
+                .frame(height: geometry.size.height)
+        }
+    }
+}
+
+
 private struct BannerView: UIViewRepresentable {
     let adSize: GADAdSize
+    let adUnitId: String
     
-    init(_ adSize: GADAdSize) {
+    init(_ adSize: GADAdSize, adUnitId: String) {
         self.adSize = adSize
+        self.adUnitId = adUnitId
     }
     
     func makeUIView(context: Context) -> UIView {
@@ -29,23 +48,26 @@ private struct BannerView: UIViewRepresentable {
     }
     
     func makeCoordinator() -> BannerCoordinator {
-        return BannerCoordinator(self)
+        return BannerCoordinator(self, adUniutID: adUnitId)
     }
     
     class BannerCoordinator: NSObject, GADBannerViewDelegate {
         
-        var bannerView(adUnitId: String = "ca-app-pub-3940256099942544/2934735716"): GADBannerView {
+        var adUniutID: String
+        
+        private(set) lazy var bannerView: GADBannerView = {
             let bannerView = GADBannerView(adSize: parent.adSize)
-            bannerView.adUnitID = adUnitId
+            bannerView.adUnitID = adUniutID
             bannerView.load(GADRequest())
             bannerView.delegate = self
             return bannerView
-        }
+        }()
         
         let parent: BannerView
         
-        init(_ parent: BannerView) {
+        init(_ parent: BannerView, adUniutID: String) {
             self.parent = parent
+            self.adUniutID = adUniutID
         }
     }
 }

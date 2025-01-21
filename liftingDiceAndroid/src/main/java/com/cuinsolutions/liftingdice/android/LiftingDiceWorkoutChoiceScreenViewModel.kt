@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.cuinsolutions.liftingdice.FirebaseDataSource
 import com.cuinsolutions.liftingdice.FirebaseRealtimeDatabaseFunctions
 import com.cuinsolutions.liftingdice.MuscleGroup
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -25,8 +26,18 @@ class LiftingDiceWorkoutChoiceScreenViewModel(private val firebaseRealtimeDataba
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, LiftingDiceWorkoutChoiceScreenState.Loading)
 
+    val selectedMuscleGroups = MutableStateFlow<List<Int>>(emptyList())
+
     fun getMuscleGroups() {
         firebaseRealtimeDatabaseFunctions.getMuscleGroups()
+    }
+
+    fun updateSelectedMuscleGroup(muscleGroup: MuscleGroup) {
+        if (selectedMuscleGroups.value.contains(muscleGroup.id)) {
+            selectedMuscleGroups.value = selectedMuscleGroups.value.filter { it != muscleGroup.id }
+        } else {
+            selectedMuscleGroups.value = selectedMuscleGroups.value.plus(muscleGroup.id)
+        }
     }
 }
 

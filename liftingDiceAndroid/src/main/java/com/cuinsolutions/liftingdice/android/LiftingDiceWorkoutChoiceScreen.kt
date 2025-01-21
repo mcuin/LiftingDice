@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,9 +48,11 @@ fun LiftingDiceWorkoutChoiceScreen(modifier: Modifier, navController: NavHostCon
         viewModel.getMuscleGroups()
     }
 
+    val selectedMuscleGroups = viewModel.selectedMuscleGroups.collectAsState()
+
     Scaffold(modifier = modifier.fillMaxSize(), topBar = { LiftingDiceAppBar(R.string.app_name, navController, modifier) },
         bottomBar = { BannerAdview() },
-        floatingActionButton = { MuscleGroupsFAB() }) { paddingValues ->
+        floatingActionButton = { if (selectedMuscleGroups.value.isNotEmpty()) MuscleGroupsFAB() }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
 
             val uiState = viewModel.muscleGroups.collectAsStateWithLifecycle()
@@ -60,7 +63,7 @@ fun LiftingDiceWorkoutChoiceScreen(modifier: Modifier, navController: NavHostCon
                 is LiftingDiceWorkoutChoiceScreenState.Success -> {
                     LazyColumn(modifier = modifier.fillMaxSize()) {
                         items(state.muscleGroups) {
-                            MuscleGroupCard(modifier = modifier, muscleGroup = it)
+                            MuscleGroupCard(modifier = modifier, muscleGroup = it, viewModel, selectedMuscleGroups)
                         }
                     }
                 }
@@ -70,17 +73,17 @@ fun LiftingDiceWorkoutChoiceScreen(modifier: Modifier, navController: NavHostCon
 }
 
 @Composable
-fun MuscleGroupCard(modifier: Modifier, muscleGroup: MuscleGroup) {
-
-    var checked by rememberSaveable { mutableStateOf(false) }
+fun MuscleGroupCard(modifier: Modifier, muscleGroup: MuscleGroup, viewModel: LiftingDiceWorkoutChoiceScreenViewModel, selectedMuscleGroups: State<List<Int>>) {
 
     Card(modifier = modifier.fillMaxWidth().padding(16.dp),
         elevation = CardDefaults.cardElevation(16.dp),
         shape = RoundedCornerShape(16.dp),
-        onClick = { checked = !checked }) {
+        onClick = {
+            viewModel.updateSelectedMuscleGroup(muscleGroup)
+        }) {
         Row {
             Text(modifier = modifier.padding(16.dp).align(Alignment.CenterVertically).weight(1f), text = muscleGroup.name.capitalize(Locale.current))
-            Checkbox(modifier = modifier.align(Alignment.CenterVertically), checked = checked, onCheckedChange = { checked = it })
+            Checkbox(modifier = modifier.align(Alignment.CenterVertically), checked = selectedMuscleGroups.value.contains(muscleGroup.id), onCheckedChange = { viewModel.updateSelectedMuscleGroup(muscleGroup) })
         }
     }
 }
