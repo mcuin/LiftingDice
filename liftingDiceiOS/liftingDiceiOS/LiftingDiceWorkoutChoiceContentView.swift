@@ -28,8 +28,8 @@ struct ContentView: View {
                     Button("Muscle Groups") {
                         
                     }
-                    Button("Settings") {
-                        
+                    NavigationLink("EquipmentSettings") {
+                        LiftingDiceEquipmentSettingsContentView()
                     }
                 }
             }

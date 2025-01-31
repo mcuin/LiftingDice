@@ -25,25 +25,5 @@ import liftingDiceShared
                 self.muscleGroups = value as! [MuscleGroup]
             })
             .store(in: &muscleGroupSubscriptions)
-        /*flow(firebaseHelper.getMuscleGroups()).handleEvents(receiveSubscription: { _ in print("subscribed to muscle groups") },
-            receiveCancel: { print("cancelled muscle groups subscription")})
-            .sink(receiveCompletion: { completion in switch completion {
-            case .finished:
-                print("finished muscle groups subscription")
-                break
-            case let .failure(error):
-                print("error muscle groups subscription: \(error)")
-                break
-            }}, receiveValue: { response in
-                print(response)
-                self.muscleGroups = response as! [MuscleGroup]
-            })
-        
-        
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-            print("cancelling muscle groups subscription")
-            muscleGroupsSubscription.cancel()
-        }*/
     }
 }

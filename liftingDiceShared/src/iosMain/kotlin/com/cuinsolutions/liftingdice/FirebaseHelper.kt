@@ -11,6 +11,10 @@ class FirebaseHelper: KoinComponent {
     @OptIn(ExperimentalObjCName::class)
     @ObjCName("getMuscleGroups")
     fun wrappedMuscleGroups() = firebaseDatabase.getMuscleGroups().wrap()
+
+    @OptIn(ExperimentalObjCName::class)
+    @ObjCName("getEquipmentSettings")
+    fun wrappedEquipmentSettings() = firebaseDatabase.getEquipmentSettings().wrap()
 }
 
 fun initKoin() {
