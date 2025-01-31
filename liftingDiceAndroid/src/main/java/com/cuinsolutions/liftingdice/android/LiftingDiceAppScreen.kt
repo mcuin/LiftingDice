@@ -4,6 +4,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -28,11 +31,24 @@ import com.google.android.gms.ads.AdView
 @Composable
 fun LiftingDiceAppBar(titleId: Int, navController: NavHostController, modifier: Modifier = Modifier) {
 
-    TopAppBar(title = { Text(text = stringResource(id = titleId)) },
+    TopAppBar(modifier = modifier, title = { Text(text = stringResource(id = titleId)) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        modifier = modifier, actions = {
-            IconButton(onClick = { /*navController.navigate()*/ }) {
-                Icon(Icons.Default.Settings, contentDescription = "")
+        navigationIcon = {
+            if (navController.previousBackStackEntry != null) {
+                IconButton(onClick = {
+                    navController.navigateUp()
+                }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "")
+                }
+            }
+        },
+        actions = {
+            if (navController.previousBackStackEntry?.destination?.route != LiftingDiceScreens.LiftingDiceSettingsScreen().name) {
+                IconButton(onClick = {
+                    navController.navigate(LiftingDiceScreens.LiftingDiceSettingsScreen().name)
+                }) {
+                    Icon(Icons.Default.Settings, contentDescription = "")
+                }
             }
         })
 }
@@ -43,6 +59,9 @@ fun LiftingDiceAppScreen(navController: NavHostController = rememberNavControlle
         NavHost(navController = navController, startDestination = LiftingDiceScreens.LiftingDiceWorkoutChoiceScreen().name) {
             composable(LiftingDiceScreens.LiftingDiceWorkoutChoiceScreen().name) {
                 LiftingDiceWorkoutChoiceScreen(modifier = Modifier, navController = navController)
+            }
+            composable(LiftingDiceScreens.LiftingDiceSettingsScreen().name) {
+                LiftingDiceSettingsScreen(modifier = Modifier, navController = navController)
             }
         }
     }
@@ -62,4 +81,5 @@ fun BannerAdview() {
 
 sealed class LiftingDiceScreens() {
     data class LiftingDiceWorkoutChoiceScreen(val name: String = "LiftingDiceWorkoutChoiceScreen") : LiftingDiceScreens()
+    data class LiftingDiceSettingsScreen(val name: String = "LiftingDiceSettingsScreen") : LiftingDiceScreens()
 }
