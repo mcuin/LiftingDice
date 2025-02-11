@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.protobuf)
 }
 
 android {
@@ -36,6 +37,9 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    ksp {
+        arg("KOIN_USE_COMPOSE_VIEWMODEL","true")
+    }
 }
 
 dependencies {
@@ -47,10 +51,35 @@ dependencies {
     implementation(libs.play.services.ads)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.databse)
-    implementation(libs.koin.android)
-    implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.navigation.compose)
+    implementation(platform(libs.koin.bom))
+    implementation(libs.koin.core)
     implementation(libs.koin.compose)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose.navigation)
+    implementation(platform(libs.koin.annotations.bom))
+    implementation(libs.koin.annotations)
     ksp(libs.koin.compiler)
+    implementation(libs.dataStore)
+    implementation(libs.protobuf.java)
+    implementation(libs.protobuf.kotlin)
     debugImplementation(libs.compose.ui.tooling)
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:4.29.3"
+    }
+
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                create("java") {
+                    option("lite")
+                }
+                create("kotlin") {
+                    option("lite")
+                }
+            }
+        }
+    }
 }

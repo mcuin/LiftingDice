@@ -44,10 +44,6 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LiftingDiceWorkoutChoiceScreen(modifier: Modifier, navController: NavHostController, viewModel: LiftingDiceWorkoutChoiceScreenViewModel = koinViewModel()) {
 
-    LaunchedEffect(Unit) {
-        viewModel.getMuscleGroups()
-    }
-
     val selectedMuscleGroups = viewModel.selectedMuscleGroups.collectAsState()
 
     Scaffold(modifier = modifier.fillMaxSize(), topBar = { LiftingDiceAppBar(R.string.app_name, navController, modifier) },

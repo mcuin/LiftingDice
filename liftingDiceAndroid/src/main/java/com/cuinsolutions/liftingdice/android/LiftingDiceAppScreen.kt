@@ -43,7 +43,7 @@ fun LiftingDiceAppBar(titleId: Int, navController: NavHostController, modifier: 
             }
         },
         actions = {
-            if (navController.previousBackStackEntry?.destination?.route != LiftingDiceScreens.LiftingDiceSettingsScreen().name) {
+            if (navController.currentBackStackEntry?.destination?.route != LiftingDiceScreens.LiftingDiceSettingsScreen().name) {
                 IconButton(onClick = {
                     navController.navigate(LiftingDiceScreens.LiftingDiceSettingsScreen().name)
                 }) {

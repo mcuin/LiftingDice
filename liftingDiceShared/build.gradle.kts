@@ -36,8 +36,9 @@ kotlin {
             implementation(libs.gitlive.firebase.database)
             implementation(libs.json.serialization)
             implementation(libs.coroutines.core)
+            implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
-            api(libs.koin.annotations)
+            api(libs.koin.core)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
@@ -48,19 +49,8 @@ kotlin {
     sourceSets.named("commonMain").configure {
         kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
     }
-}
-
-dependencies {
-    add("kspCommonMainMetadata", libs.koin.compiler)
-    add("kspAndroid", libs.koin.compiler)
-    add("kspIosX64", libs.koin.compiler)
-    add("kspIosArm64", libs.koin.compiler)
-    add("kspIosSimulatorArm64", libs.koin.compiler)
-}
-
-project.tasks.withType(KotlinCompilationTask::class.java).configureEach {
-    if(name != "kspCommonMainKotlinMetadata") {
-        dependsOn("kspCommonMainKotlinMetadata")
+    sourceSets.named("androidMain").configure {
+        kotlin.srcDir("../liftingDiceAndroid/build/generated/ksp/debug/kotlin")
     }
 }
 

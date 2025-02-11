@@ -33,7 +33,6 @@ import org.koin.androidx.compose.koinViewModel
 fun LiftingDiceSettingsScreen(modifier: Modifier, navController: NavHostController, liftingDiceSettingsViewModel: LiftingDiceSettingsViewModel = koinViewModel()) {
 
     val equipmentSettingUiState by liftingDiceSettingsViewModel.equipmentSettingsUiState.collectAsStateWithLifecycle()
-    val selectedEquipmentSetting by liftingDiceSettingsViewModel.selectedEquipmentSetting.collectAsStateWithLifecycle()
 
     Scaffold(modifier = modifier, topBar = {
         LiftingDiceAppBar(titleId = R.string.equipment_settings_title, navController = navController)
@@ -51,7 +50,7 @@ fun LiftingDiceSettingsScreen(modifier: Modifier, navController: NavHostControll
                 is LiftingDiceSettingsScreenState.Success -> {
                     LazyColumn(modifier = modifier.fillMaxSize()) {
                         items(state.equipmentSettings) {
-                            EquipmentSettingCard(modifier = modifier, equipmentSetting = it, liftingDiceSettingsViewModel, selectedEquipmentSetting)
+                            EquipmentSettingCard(modifier = modifier, equipmentSetting = it, liftingDiceSettingsViewModel, state.selectedEquipmentIds)
                         }
                     }
                 }
@@ -82,6 +81,7 @@ fun EquipmentSettingCard(modifier: Modifier, equipmentSetting: EquipmentSetting,
 fun EquipmentSettingFAB(modifier: Modifier, navController: NavHostController, viewModel: LiftingDiceSettingsViewModel) {
     FloatingActionButton(modifier = modifier.padding(16.dp), onClick = {
         viewModel.saveEquipmentSettings()
+        navController.navigateUp()
     }, shape = RoundedCornerShape(16.dp)) {
         Icon(painter = painterResource(R.drawable.ic_save), contentDescription = "")
     }

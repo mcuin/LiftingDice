@@ -19,6 +19,6 @@ class FirebaseHelper: KoinComponent {
 
 fun initKoin() {
     startKoin {
-        modules(appModule())
+        modules(appModule)
     }
 }
