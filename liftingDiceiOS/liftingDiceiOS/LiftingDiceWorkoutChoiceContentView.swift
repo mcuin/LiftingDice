@@ -14,7 +14,6 @@ struct ContentView: View {
                 List(liftingDiceWorkoutChoiceViewModel.muscleGroups, id: \.self, selection: $selectedGroups) { muscleGroup in
                     Text(muscleGroup.name)
                 }.environment(\.editMode, .constant(.active))
-                Spacer().frame(height: .infinity)
             BannerContentView().frame(maxHeight: .infinity, alignment: .bottom)
             }
             .navigationTitle("Muscle Groups")

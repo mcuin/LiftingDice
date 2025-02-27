@@ -12,12 +12,11 @@ import liftingDiceShared
 struct LiftingDiceEquipmentSettingsContentView: View {
     
     @State var liftingDiceEquipmentSettingsViewModel = LiftingDiceEquipmentSettingsViewModel()
-    @State var selectedEquipment: Set<EquipmentSetting> = []
     
     var body: some View {
         NavigationStack {
             VStack {
-                List(liftingDiceEquipmentSettingsViewModel.equipmentSettings, id: \.self, selection: $selectedEquipment) { equipmentSetting in
+                List(liftingDiceEquipmentSettingsViewModel.equipmentSettings, id: \.self, selection: $liftingDiceEquipmentSettingsViewModel.selectedEquipmentSettings) { equipmentSetting in
                     Text(equipmentSetting.name)
                 }.environment(\.editMode, .constant(.active))
                 BannerContentView()
@@ -26,8 +25,8 @@ struct LiftingDiceEquipmentSettingsContentView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Save") {
-                        
-                    }.disabled(selectedEquipment.isEmpty)
+                        liftingDiceEquipmentSettingsViewModel.saveEquipmentSettings()
+                    }.disabled($liftingDiceEquipmentSettingsViewModel.selectedEquipmentSettings.wrappedValue.isEmpty)
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
                     Button("Muscle Groups") {
