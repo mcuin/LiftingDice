@@ -3,5 +3,12 @@
     <string name="app_name">Lifting Dice</string>
     <string name="select_muscle_groups_fab_content_description">Muscle Groups Selected, go to dice</string>
     <string name="equipment_settings_title">Equipment Settings</string>
-    <string name="equipment_settings_fab_content_description">Save Equipment Settings</string>"
+    <string name="equipment_settings_fab_content_description">Save Equipment Settings</string>
+    <string name="exercises_roll_title">Exercise Rolls</string>
+    <string name="exercises_reroll_all">Reroll All</string>
+    <string name="exercises_description">Dislike one of your options? Tap to reroll that exercise, or reroll them all.</string>
+    <string name="exercises_warning">All these exercises are only suggestions. Perform only what you are comfortable with. Never push yourself over your limits, and listen to your body.</string>
+    <string name="exercises_reroll_all_warning">You are out of all rerolls for the day. Do you want to watch and ad for more?</string>
+    <string name="exercises_reroll_single_warning">You are out of single rerolls for the day. Do you want to watch and ad for more?</string>
+    <string name="exercise_info_content_description">Web search for more info about this exercise</string>
 </resources>

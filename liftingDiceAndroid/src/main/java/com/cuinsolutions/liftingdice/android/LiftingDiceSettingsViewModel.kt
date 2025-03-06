@@ -20,7 +20,7 @@ class LiftingDiceSettingsViewModel(private val firebaseRealtimeDatabaseFunctions
 
     private val selectedEquipmentIdsFlow = MutableStateFlow<List<Int>>(emptyList())
 
-    val dataStoreFlow = dataStore.data.map { preferences ->
+    private val dataStoreFlow = dataStore.data.map { preferences ->
         selectedEquipmentIdsFlow.update { equipmentIds ->
             equipmentIds.toMutableList().also {
                 it.addAll(preferences.equipmentSettingsIdsList)

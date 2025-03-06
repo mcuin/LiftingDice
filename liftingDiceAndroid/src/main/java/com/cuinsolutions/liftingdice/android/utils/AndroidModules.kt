@@ -1,5 +1,6 @@
 package com.cuinsolutions.liftingdice.android.utils
 
+import com.cuinsolutions.liftingdice.android.LiftingDiceExercisesScreenViewModel
 import com.cuinsolutions.liftingdice.android.LiftingDiceSettingsViewModel
 import com.cuinsolutions.liftingdice.android.LiftingDiceWorkoutChoiceScreenViewModel
 import org.koin.android.ext.koin.androidContext
@@ -15,4 +16,5 @@ val androidModule = module {
     single { DataStoreModule(androidContext()).provideProtoDataStore() }
     viewModel { LiftingDiceWorkoutChoiceScreenViewModel(get()) }
     viewModel { LiftingDiceSettingsViewModel(get(), get()) }
+    viewModel { LiftingDiceExercisesScreenViewModel(get(), get()) }
 }

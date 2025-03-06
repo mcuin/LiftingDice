@@ -31,4 +31,15 @@ class FirebaseRealtimeDatabaseFunctions (private val firebaseDataSource: Firebas
             emit(equipmentSettings.toList())
         }
     }
+
+    @OptIn(ExperimentalObjCRefinement::class)
+    @HiddenFromObjC
+    fun getExercises(): Flow<List<Exercise>> = flow {
+        val exercisesReference = firebaseDataSource.firebaseDatabase.reference("exercises")
+        exercisesReference.valueEvents.collect { snapshot ->
+            val exercises = mutableListOf<Exercise>()
+            snapshot.children.map { exercise -> exercises.add(exercise.value()) }
+            emit(exercises.toList())
+        }
+    }
 }

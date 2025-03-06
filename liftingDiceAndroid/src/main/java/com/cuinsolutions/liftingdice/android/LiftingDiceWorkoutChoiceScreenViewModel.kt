@@ -16,7 +16,6 @@ import org.koin.core.annotation.Module
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-@KoinViewModel
 class LiftingDiceWorkoutChoiceScreenViewModel(private val firebaseRealtimeDatabaseFunctions: FirebaseRealtimeDatabaseFunctions): ViewModel() {
 
     val muscleGroups = firebaseRealtimeDatabaseFunctions.getMuscleGroups().map {
@@ -27,10 +26,6 @@ class LiftingDiceWorkoutChoiceScreenViewModel(private val firebaseRealtimeDataba
     }.stateIn(viewModelScope, SharingStarted.Lazily, LiftingDiceWorkoutChoiceScreenState.Loading)
 
     val selectedMuscleGroups = MutableStateFlow<List<Int>>(emptyList())
-
-    fun getMuscleGroups() {
-        firebaseRealtimeDatabaseFunctions.getMuscleGroups()
-    }
 
     fun updateSelectedMuscleGroup(muscleGroup: MuscleGroup) {
         if (selectedMuscleGroups.value.contains(muscleGroup.id)) {

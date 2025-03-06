@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="standard_padding">16dp</dimen>
+    <dimen name="small_padding">8dp</dimen>
+    <dimen name="exercise_card_height">100dp</dimen>
+    <dimen name="standard_card_corner">16dp</dimen>
+    <dimen name="standard_card_elevation">4dp</dimen>
+    <dimen name="fab_bottom_content_padding">64dp</dimen>
+</resources>

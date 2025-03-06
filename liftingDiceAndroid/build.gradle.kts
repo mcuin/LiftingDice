@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
     alias(libs.plugins.protobuf)
+    alias(libs.plugins.seraliziation)
 }
 
 android {
@@ -62,6 +63,9 @@ dependencies {
     implementation(libs.dataStore)
     implementation(libs.protobuf.java)
     implementation(libs.protobuf.kotlin)
+    implementation(libs.json.serialization)
+    implementation(libs.compose.navigation)
+    androidTestImplementation(libs.compose.navigation.testing)
     debugImplementation(libs.compose.ui.tooling)
 }
 
