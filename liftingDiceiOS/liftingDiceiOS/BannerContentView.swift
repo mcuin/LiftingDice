@@ -13,16 +13,17 @@ import SwiftUI
 struct BannerContentView: View {
     
     let adUnitId: String
+    var width = UIScreen.main.bounds.width
+    var size: CGSize {
+        return GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(width).size
+    }
     
     init(adUnitId: String = "ca-app-pub-3940256099942544/2934735716") {
         self.adUnitId = adUnitId
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            BannerView(GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(geometry.size.width), adUnitId: adUnitId)
-                .frame(height: geometry.size.height)
-        }
+        BannerView(GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(width), adUnitId: adUnitId).frame(height: size.height)
     }
 }
 

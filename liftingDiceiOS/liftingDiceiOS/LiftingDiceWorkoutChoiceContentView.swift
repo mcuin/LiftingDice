@@ -2,7 +2,7 @@ import SwiftUI
 import liftingDiceShared
 import GoogleMobileAds
 
-struct ContentView: View {
+struct LiftingDiceWorkoutChoiceContentView: View {
     
     @State private var liftingDiceWorkoutChoiceViewModel = LiftingDiceWorkoutChoiceViewModel()
     @State private var selectedGroups = Set<MuscleGroup>()
@@ -12,24 +12,16 @@ struct ContentView: View {
         NavigationStack {
             VStack {
                 List(liftingDiceWorkoutChoiceViewModel.muscleGroups, id: \.self, selection: $selectedGroups) { muscleGroup in
-                    Text(muscleGroup.name)
+                    Text(muscleGroup.name.capitalized)
                 }.environment(\.editMode, .constant(.active))
-            BannerContentView().frame(maxHeight: .infinity, alignment: .bottom)
+                BannerContentView()
             }
             .navigationTitle("Muscle Groups")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Next") {
-                        
+                    NavigationLink("Next") {
+                        LiftingDiceExercisesContentView(selectedMusleGroups: selectedGroups)
                     }.disabled(selectedGroups.isEmpty)
-                }
-                ToolbarItemGroup(placement: .bottomBar) {
-                    Button("Muscle Groups") {
-                        
-                    }
-                    NavigationLink("EquipmentSettings") {
-                        LiftingDiceEquipmentSettingsContentView()
-                    }
                 }
             }
         }
@@ -41,6 +33,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
 	static var previews: some View {
-		ContentView()
+		LiftingDiceWorkoutChoiceContentView()
 	}
 }

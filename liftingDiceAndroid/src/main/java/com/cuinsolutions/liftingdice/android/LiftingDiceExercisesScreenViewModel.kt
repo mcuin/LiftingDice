@@ -77,7 +77,7 @@ class LiftingDiceExercisesScreenViewModel(private val firebaseRealtimeDatabaseFu
             val reRollExercise = successState.randomExercises[index]
             val randomExercises = successState.randomExercises.toMutableList()
             randomExercises.remove(reRollExercise)
-            while (randomExercises.size < successState.randomExercises.count()) {
+            while (randomExercises.count() < successState.randomExercises.count()) {
                 val randomExercise = filteredExercises.random()
                 if (reRollExercise != randomExercise && !randomExercises.contains(randomExercise)) {
                     randomExercises.add(index, randomExercise)
