@@ -11,4 +11,9 @@
     <string name="exercises_reroll_all_warning">You are out of all rerolls for the day. Do you want to watch and ad for more?</string>
     <string name="exercises_reroll_single_warning">You are out of single rerolls for the day. Do you want to watch and ad for more?</string>
     <string name="exercise_info_content_description">Web search for more info about this exercise</string>
+    <string name="exercise_dice_content_description">Reroll this exercise</string>
+    <string name="exercise_out_of_rerolls_title">Out of Rerolls</string>
+    <string name="exercise_out_of_rerolls_description">You are out of rerolls. Do you want to watch and ad for more?</string>
+    <string name="exercise_out_of_rerolls_watch_ad">Watch Ad</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -41,7 +42,8 @@ fun LiftingDiceSettingsScreen(modifier: Modifier, canNavigateBack: Boolean, navi
     }, bottomBar = {
         BannerAdview()
     }, floatingActionButton = {
-        EquipmentSettingFAB(modifier = modifier, navigateBack = navigateBack, viewModel = liftingDiceSettingsViewModel)
+        if ((equipmentSettingUiState is LiftingDiceSettingsScreenState.Success) && (equipmentSettingUiState as LiftingDiceSettingsScreenState.Success).selectedEquipmentIds.isNotEmpty())
+            EquipmentSettingFAB(modifier = modifier, navigateBack = navigateBack, viewModel = liftingDiceSettingsViewModel)
     }) { paddingValues ->
 
         Column(modifier = modifier.padding(paddingValues)) {
@@ -51,8 +53,8 @@ fun LiftingDiceSettingsScreen(modifier: Modifier, canNavigateBack: Boolean, navi
                 is LiftingDiceSettingsScreenState.Error -> {}
                 is LiftingDiceSettingsScreenState.Success -> {
                     LazyColumn(modifier = modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = dimensionResource(R.dimen.fab_bottom_content_padding))) {
-                        items(state.equipmentSettings) {
-                            EquipmentSettingCard(modifier = modifier, equipmentSetting = it, liftingDiceSettingsViewModel, state.selectedEquipmentIds)
+                        itemsIndexed(state.equipmentSettings) { index, equipmentSetting ->
+                            EquipmentSettingCard(modifier = modifier, equipmentSetting = equipmentSetting, viewModel = liftingDiceSettingsViewModel, selectedEquipmentSetting = state.selectedEquipmentIds.contains(equipmentSetting.id))
                         }
                     }
                 }
@@ -62,7 +64,7 @@ fun LiftingDiceSettingsScreen(modifier: Modifier, canNavigateBack: Boolean, navi
 }
 
 @Composable
-fun EquipmentSettingCard(modifier: Modifier, equipmentSetting: EquipmentSetting, viewModel: LiftingDiceSettingsViewModel, selectedEquipmentSetting: List<Int>) {
+fun EquipmentSettingCard(modifier: Modifier, equipmentSetting: EquipmentSetting, viewModel: LiftingDiceSettingsViewModel, selectedEquipmentSetting: Boolean) {
     ElevatedCard(modifier = modifier.fillMaxWidth().padding(dimensionResource(R.dimen.standard_padding)),
         elevation = CardDefaults.cardElevation(dimensionResource(R.dimen.standard_card_elevation)),
         shape = RoundedCornerShape(dimensionResource(R.dimen.standard_card_corner)),
@@ -72,7 +74,7 @@ fun EquipmentSettingCard(modifier: Modifier, equipmentSetting: EquipmentSetting,
         Row {
             Text(modifier = modifier.padding(16.dp).align(Alignment.CenterVertically).weight(1f), text = equipmentSetting.name.capitalize(
                 Locale.current), style = MaterialTheme.typography.titleLarge)
-            Checkbox(modifier = modifier.align(Alignment.CenterVertically), checked = selectedEquipmentSetting.contains(equipmentSetting.id), onCheckedChange = {
+            Checkbox(modifier = modifier.align(Alignment.CenterVertically), checked = selectedEquipmentSetting, onCheckedChange = {
                 viewModel.updateEquipmentSetting(equipmentSetting)
             })
         }

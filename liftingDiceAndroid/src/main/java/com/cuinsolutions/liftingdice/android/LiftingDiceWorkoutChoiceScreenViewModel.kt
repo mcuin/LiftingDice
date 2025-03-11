@@ -7,6 +7,7 @@ import com.cuinsolutions.liftingdice.FirebaseRealtimeDatabaseFunctions
 import com.cuinsolutions.liftingdice.MuscleGroup
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import org.koin.android.annotation.KoinViewModel
@@ -18,14 +19,14 @@ import org.koin.core.component.inject
 
 class LiftingDiceWorkoutChoiceScreenViewModel(private val firebaseRealtimeDatabaseFunctions: FirebaseRealtimeDatabaseFunctions): ViewModel() {
 
-    val muscleGroups = firebaseRealtimeDatabaseFunctions.getMuscleGroups().map {
+    private val selectedMuscleGroups = MutableStateFlow<List<Int>>(emptyList())
+
+    val muscleGroups = combine(firebaseRealtimeDatabaseFunctions.getMuscleGroups(), selectedMuscleGroups) { muscleGroups, selectedMuscleGroups ->
         when {
-            it.isNotEmpty() -> LiftingDiceWorkoutChoiceScreenState.Success(it)
+            muscleGroups.isNotEmpty() -> LiftingDiceWorkoutChoiceScreenState.Success(muscleGroups, selectedMuscleGroups)
             else -> LiftingDiceWorkoutChoiceScreenState.Loading
         }
     }.stateIn(viewModelScope, SharingStarted.Lazily, LiftingDiceWorkoutChoiceScreenState.Loading)
-
-    val selectedMuscleGroups = MutableStateFlow<List<Int>>(emptyList())
 
     fun updateSelectedMuscleGroup(muscleGroup: MuscleGroup) {
         if (selectedMuscleGroups.value.contains(muscleGroup.id)) {
@@ -38,6 +39,6 @@ class LiftingDiceWorkoutChoiceScreenViewModel(private val firebaseRealtimeDataba
 
 sealed class LiftingDiceWorkoutChoiceScreenState {
     data object Loading: LiftingDiceWorkoutChoiceScreenState()
-    data class Success(val muscleGroups: List<MuscleGroup>): LiftingDiceWorkoutChoiceScreenState()
+    data class Success(val muscleGroups: List<MuscleGroup>, val selectedMuscleGroups: List<Int> = emptyList()): LiftingDiceWorkoutChoiceScreenState()
     data class Error(val message: String): LiftingDiceWorkoutChoiceScreenState()
 }

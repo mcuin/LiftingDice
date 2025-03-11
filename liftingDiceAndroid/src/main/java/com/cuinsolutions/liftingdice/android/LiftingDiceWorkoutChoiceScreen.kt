@@ -37,14 +37,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun LiftingDiceWorkoutChoiceScreen(modifier: Modifier, canNavBack: Boolean, canNavigateToEquipmentSettings: Boolean, navigateBack: () -> Unit, onNavigateToEquipmentSettingsScreen: () -> Unit, onNavigateToExercisesScreen: (List<Int>) -> Unit, viewModel: LiftingDiceWorkoutChoiceScreenViewModel = koinViewModel()) {
 
-    val selectedMuscleGroups = viewModel.selectedMuscleGroups.collectAsStateWithLifecycle()
+    val uiState = viewModel.muscleGroups.collectAsStateWithLifecycle()
 
     Scaffold(modifier = modifier.fillMaxSize(), topBar = { LiftingDiceAppBar(titleId = R.string.app_name, canNavBack = canNavBack, canNavigateToEquipmentSettings = canNavigateToEquipmentSettings, navigateBack = navigateBack, onNavigateToEquipmentSettings = onNavigateToEquipmentSettingsScreen) },
         bottomBar = { BannerAdview() },
-        floatingActionButton = { if (selectedMuscleGroups.value.isNotEmpty()) MuscleGroupsFAB(onNavigateToExercisesScreen, viewModel) }) { paddingValues ->
+        floatingActionButton = { if (uiState.value is LiftingDiceWorkoutChoiceScreenState.Success && (uiState.value as LiftingDiceWorkoutChoiceScreenState.Success).selectedMuscleGroups.isNotEmpty()) MuscleGroupsFAB(onNavigateToExercisesScreen, (uiState.value as LiftingDiceWorkoutChoiceScreenState.Success).selectedMuscleGroups) }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-
-            val uiState = viewModel.muscleGroups.collectAsStateWithLifecycle()
 
             when (val state = uiState.value) {
                 is LiftingDiceWorkoutChoiceScreenState.Error -> {}
@@ -52,7 +50,7 @@ fun LiftingDiceWorkoutChoiceScreen(modifier: Modifier, canNavBack: Boolean, canN
                 is LiftingDiceWorkoutChoiceScreenState.Success -> {
                     LazyColumn(modifier = modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = dimensionResource(R.dimen.fab_bottom_content_padding))) {
                         items(state.muscleGroups) {
-                            MuscleGroupCard(modifier = modifier, muscleGroup = it, viewModel, selectedMuscleGroups)
+                            MuscleGroupCard(modifier = modifier, muscleGroup = it, viewModel, selectedMuscleGroup = state.selectedMuscleGroups.contains(it.id))
                         }
                     }
                 }
@@ -62,7 +60,7 @@ fun LiftingDiceWorkoutChoiceScreen(modifier: Modifier, canNavBack: Boolean, canN
 }
 
 @Composable
-fun MuscleGroupCard(modifier: Modifier, muscleGroup: MuscleGroup, viewModel: LiftingDiceWorkoutChoiceScreenViewModel, selectedMuscleGroups: State<List<Int>>) {
+fun MuscleGroupCard(modifier: Modifier, muscleGroup: MuscleGroup, viewModel: LiftingDiceWorkoutChoiceScreenViewModel, selectedMuscleGroup: Boolean) {
 
     ElevatedCard(modifier = modifier.fillMaxWidth().padding(dimensionResource(R.dimen.standard_padding)),
         shape = RoundedCornerShape(dimensionResource(R.dimen.standard_card_corner)),
@@ -72,15 +70,15 @@ fun MuscleGroupCard(modifier: Modifier, muscleGroup: MuscleGroup, viewModel: Lif
         }) {
         Row {
             Text(modifier = modifier.padding(dimensionResource(R.dimen.standard_padding)).align(Alignment.CenterVertically).weight(1f), text = muscleGroup.name.capitalize(Locale.current), style = MaterialTheme.typography.titleLarge)
-            Checkbox(modifier = modifier.align(Alignment.CenterVertically), checked = selectedMuscleGroups.value.contains(muscleGroup.id), onCheckedChange = { viewModel.updateSelectedMuscleGroup(muscleGroup) })
+            Checkbox(modifier = modifier.align(Alignment.CenterVertically), checked = selectedMuscleGroup, onCheckedChange = { viewModel.updateSelectedMuscleGroup(muscleGroup) })
         }
     }
 }
 
 @Composable
-fun MuscleGroupsFAB(onNavigateToExercisesScreen: (List<Int>) -> Unit, workoutChoiceScreenViewModel: LiftingDiceWorkoutChoiceScreenViewModel) {
+fun MuscleGroupsFAB(onNavigateToExercisesScreen: (List<Int>) -> Unit, selectedMuscleGroups: List<Int>) {
     FloatingActionButton(onClick = {
-        onNavigateToExercisesScreen(workoutChoiceScreenViewModel.selectedMuscleGroups.value)
+        onNavigateToExercisesScreen(selectedMuscleGroups)
     }) {
         Icon(imageVector = Icons.AutoMirrored.Filled.ArrowForward, contentDescription = stringResource(id = R.string.select_muscle_groups_fab_content_description))
     }

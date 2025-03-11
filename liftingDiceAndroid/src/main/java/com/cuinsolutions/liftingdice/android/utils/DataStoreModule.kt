@@ -29,7 +29,9 @@ class DataStoreModule(val context: Context) {
 }
 
 object UserPreferencesSerializer: Serializer<UserPreferencesOuterClass.UserPreferences> {
-    override val defaultValue = UserPreferencesOuterClass.UserPreferences.getDefaultInstance()
+    override val defaultValue = UserPreferencesOuterClass.UserPreferences.getDefaultInstance().toBuilder()
+        .setRerolls(5)
+        .build()
     override suspend fun readFrom(input: InputStream): UserPreferencesOuterClass.UserPreferences {
         try {
             return UserPreferencesOuterClass.UserPreferences.parseFrom(input)

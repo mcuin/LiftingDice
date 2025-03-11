@@ -9,22 +9,31 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class LiftingDiceExercisesScreenViewModel(private val firebaseRealtimeDatabaseFunctions: FirebaseRealtimeDatabaseFunctions, private val dataStore: DataStore<UserPreferencesOuterClass.UserPreferences>): ViewModel() {
 
     private val _exercisesUiState = MutableStateFlow<ExercisesLoadState>(ExercisesLoadState.Loading)
     val exercisesUiState = _exercisesUiState.asStateFlow()
 
-    private val dataStoreFlow = dataStore.data
-    lateinit var filteredExercises: List<Exercise>
+    var currentRerolls = 0
+    private val selectedEquipmentIds = MutableStateFlow<List<Int>>(emptyList())
+    private val dataStoreFlow = dataStore.data.map { dataStore ->
+        selectedEquipmentIds.update {
+            dataStore.equipmentSettingsIdsList
+        }
+        currentRerolls = dataStore.rerolls
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, Unit)
+    var filteredExercises: List<Exercise> = emptyList()
 
     fun loadExercises(selectedMuscleGroups: List<Int>) {
-        firebaseRealtimeDatabaseFunctions.getExercises().combine(dataStoreFlow) { allExercises, equipmentSettings ->
+        firebaseRealtimeDatabaseFunctions.getExercises().combine(selectedEquipmentIds) { allExercises, equipmentIds ->
             if (allExercises.isNotEmpty()) {
-                if (equipmentSettings.equipmentSettingsIdsList.isNotEmpty()) {
-                    val equipmentSettingsIds = equipmentSettings.equipmentSettingsIdsList
+                if (equipmentIds.isNotEmpty()) {
+                    val equipmentSettingsIds = equipmentIds
                     filteredExercises = allExercises.filter { exercise ->
                         selectedMuscleGroups.any {selectedMuscleGroup ->
                             selectedMuscleGroup in exercise.muscleGroupIds
@@ -83,9 +92,10 @@ class LiftingDiceExercisesScreenViewModel(private val firebaseRealtimeDatabaseFu
                     randomExercises.add(index, randomExercise)
                 }
             }
-            _exercisesUiState .update {
+            _exercisesUiState.update {
                 ExercisesLoadState.Success(successState.allFilteredExercises, successState.diceAmount, randomExercises)
             }
+            updateRerolls()
         }
     }
 
@@ -99,6 +109,23 @@ class LiftingDiceExercisesScreenViewModel(private val firebaseRealtimeDatabaseFu
             }
             _exercisesUiState.update {
                 ExercisesLoadState.Success(successState.allFilteredExercises, successState.diceAmount, randomExercises.toList())
+            }
+            updateRerolls()
+        }
+    }
+
+    private fun updateRerolls() {
+        viewModelScope.launch {
+            dataStore.updateData { currentPreferences ->
+                currentPreferences.toBuilder().setRerolls(currentRerolls - 1).build()
+            }
+        }
+    }
+
+    fun resetRerolls(rewardedRolls: Int) {
+        viewModelScope.launch {
+            dataStore.updateData { currentPreferences ->
+                currentPreferences.toBuilder().setRerolls(rewardedRolls).build()
             }
         }
     }

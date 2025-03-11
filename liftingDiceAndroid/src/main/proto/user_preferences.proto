@@ -2,4 +2,5 @@ syntax = "proto3";
 
 message UserPreferences {
     repeated int32 equipment_settings_ids = 1;
+    int32 rerolls = 2;
 }
