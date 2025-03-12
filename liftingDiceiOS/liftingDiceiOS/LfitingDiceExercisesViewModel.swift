@@ -10,23 +10,37 @@ import Foundation
 import Combine
 import liftingDiceShared
 import CoreData
+import GoogleMobileAds
 
-@Observable final class LiftingDiceExercisesViewModel: NSObject, NSFetchedResultsControllerDelegate {
+@Observable final class LiftingDiceExercisesViewModel: NSObject, NSFetchedResultsControllerDelegate, GADFullScreenContentDelegate {
     
     var filteredExercises: [Exercise] = []
     var randomizedExercises: [Exercise] = []
     private var exercisesSubscription = Set<AnyCancellable>()
-    private let fetchedResultsController: NSFetchedResultsController<EquipmentSettings>
+    private let equipmentSettingsFetchedResultsController: NSFetchedResultsController<EquipmentSettings>
+    private let userDataFetchedResultsController: NSFetchedResultsController<UserData>
     private let dataController: DataController = .init()
+    var rerolls = 0
+    private var rewardedAd: GADRewardedAd?
     
     override init() {
-        let request = NSFetchRequest<EquipmentSettings>(entityName: "EquipmentSettings")
-        request.sortDescriptors = [NSSortDescriptor(key: "selectedEquipmentIds", ascending: true)]
-        self.fetchedResultsController = NSFetchedResultsController<EquipmentSettings>(fetchRequest: request, managedObjectContext: dataController.container.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        let equipmentSettingsrequest = NSFetchRequest<EquipmentSettings>(entityName: "EquipmentSettings")
+        equipmentSettingsrequest.sortDescriptors = [NSSortDescriptor(key: "selectedEquipmentIds", ascending: true)]
+        self.equipmentSettingsFetchedResultsController = NSFetchedResultsController<EquipmentSettings>(fetchRequest: equipmentSettingsrequest, managedObjectContext: dataController.container.viewContext, sectionNameKeyPath: nil, cacheName: nil)
+        let userDataRequest = NSFetchRequest<UserData>(entityName: "UserData")
+        userDataRequest.sortDescriptors = [NSSortDescriptor(key: "rerolls", ascending: true)]
+        self.userDataFetchedResultsController = NSFetchedResultsController<UserData>(fetchRequest: userDataRequest, managedObjectContext: dataController.container.viewContext, sectionNameKeyPath: nil, cacheName: nil)
         
         super.init()
         
-        fetchedResultsController.delegate = self
+        equipmentSettingsFetchedResultsController.delegate = self
+        userDataFetchedResultsController.delegate = self
+    }
+    
+    func getRerolls() {
+        try! self.userDataFetchedResultsController.performFetch()
+        let userData = self.userDataFetchedResultsController.fetchedObjects?.first
+        self.rerolls = Int(truncating: userData.flatMap { $0.rerolls as NSNumber } ?? 5)
     }
     
     func rollNames() async -> Exercise {
@@ -34,7 +48,7 @@ import CoreData
     }
     
     func rerollExercise(exercise: Exercise) {
-        let exerciseIndex = randomizedExercises.firstIndex(where: { $0.id == exercise.id })
+        let exerciseIndex = randomizedExercises.firstIndex(of: exercise)
         var tempExercises = randomizedExercises
         tempExercises.remove(at: exerciseIndex!)
         while (tempExercises.count < randomizedExercises.count) {
@@ -44,6 +58,7 @@ import CoreData
                 tempExercises.insert(randomExercise, at: exerciseIndex!)
             }
         }
+        updateRerolls()
     }
     
     func rerollAllExercises() {
@@ -54,6 +69,22 @@ import CoreData
             tempExercises.insert(randomExercise)
         }
         randomizedExercises = Array(tempExercises)
+        updateRerolls()
+    }
+    
+    func updateRerolls() {
+        DataController.shared.saveUserRerolls(rerolls: self.rerolls - 1)
+        self.rerolls -= 1
+    }
+    
+    func resetRerolls(rewardedRerolls: Int, rerollExerciseItem: Exercise?) {
+        DataController.shared.saveUserRerolls(rerolls: rewardedRerolls)
+        self.rerolls = rewardedRerolls
+        if (rerollExerciseItem != nil) {
+            rerollExercise(exercise: rerollExerciseItem!)
+        } else {
+            rerollAllExercises()
+        }
     }
     
     func startExercisesObserving(selectedMuscleGroups: Set<MuscleGroup>) {
@@ -65,9 +96,9 @@ import CoreData
                 print(completion)
             }, receiveValue: { value in
                 if (!(value as! [Exercise]).isEmpty) {
-                    let muscleGroupsIds = selectedMuscleGroups.map { $0.id }
-                    try! self.fetchedResultsController.performFetch()
-                    let selectedEquipmentIds = self.fetchedResultsController.fetchedObjects?.first.flatMap { $0.selectedEquipmentIds } ?? []
+                    self.getRerolls()
+                    try! self.equipmentSettingsFetchedResultsController.performFetch()
+                    let selectedEquipmentIds = self.equipmentSettingsFetchedResultsController.fetchedObjects?.first.flatMap { $0.selectedEquipmentIds } ?? []
                     print(selectedEquipmentIds)
                     if (!selectedEquipmentIds.isEmpty) {
                         self.filteredExercises = (value as! [Exercise]).filter { exercise in exercise.muscleGroupIds.contains(where: { muscleGroupId in
@@ -110,5 +141,29 @@ import CoreData
                 }
             })
             .store(in: &self.exercisesSubscription)
+    }
+    
+    func loadAd() async {
+        do {
+            rewardedAd = try await GADRewardedAd.load(withAdUnitID: "ca-app-pub-3940256099942544/1712485313", request: GADRequest())
+            rewardedAd?.fullScreenContentDelegate = self
+        } catch {
+            print("Failed to load rewarded ad: \(error)")
+        }
+    }
+    
+    func showAd(rerollExercise: Exercise?) {
+        guard let rewardedAd = rewardedAd else {
+            return print("Ad wasn't loaded yet.")
+        }
+        
+        rewardedAd.present(fromRootViewController: nil) {
+            let reward = rewardedAd.adReward
+            self.resetRerolls(rewardedRerolls: Int(truncating: reward.amount), rerollExerciseItem: rerollExercise)
+        }
+    }
+    
+    func adDidDismissFullScreenContent(_ ad: GADFullScreenPresentingAd) {
+        rewardedAd = nil
     }
 }

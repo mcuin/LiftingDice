@@ -3,4 +3,7 @@
     <entity name="EquipmentSettings" representedClassName="EquipmentSettings" syncable="YES" codeGenerationType="class">
         <attribute name="selectedEquipmentIds" attributeType="Transformable" valueTransformerName="NSSecureUnarchiveFromData" customClassName=".[Int]"/>
     </entity>
+    <entity name="UserData" representedClassName="UserData" syncable="YES" codeGenerationType="class">
+        <attribute name="rerolls" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+    </entity>
 </model>

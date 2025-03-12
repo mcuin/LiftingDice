@@ -15,6 +15,7 @@ import liftingDiceShared
     static let shared = DataController()
     let container: NSPersistentContainer
     var viewContext: NSManagedObjectContext {
+        container.viewContext.automaticallyMergesChangesFromParent = true
         return container.viewContext
     }
     
@@ -61,6 +62,36 @@ import liftingDiceShared
                 equipmentSettings = EquipmentSettings(context: viewContext)
             }
             equipmentSettings.selectedEquipmentIds = selectedIds
+            save()
+        } catch {
+            print("Saving Core Data Failed: \(error)")
+        }
+    }
+    
+    func getUserRerolls() -> Int {
+        let request = NSFetchRequest<UserData>(entityName: "UserData")
+        request.returnsObjectsAsFaults = false
+        
+        do {
+            let userData = try viewContext.fetch(request)
+            return Int(userData.first?.rerolls ?? 5)
+        } catch {
+            return 5
+        }
+    }
+    
+    func saveUserRerolls(rerolls: Int) {
+        let userData: UserData
+        let checkRequest = NSFetchRequest<UserData>(entityName: "UserData")
+        
+        do {
+            let fetchResults = try viewContext.fetch(checkRequest)
+            if fetchResults.count > 0 {
+                userData = fetchResults[0]
+            } else {
+                userData = UserData(context: viewContext)
+            }
+            userData.rerolls = Int32(rerolls)
             save()
         } catch {
             print("Saving Core Data Failed: \(error)")

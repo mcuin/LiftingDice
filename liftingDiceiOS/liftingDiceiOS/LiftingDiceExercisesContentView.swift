@@ -18,6 +18,9 @@ struct LiftingDiceExercisesContentView: View {
     
     let selectedMusleGroups: Set<MuscleGroup>
     @State var liftingDiceExerciseViewModel = LiftingDiceExercisesViewModel()
+    @State private var showRerollAllAlert = false
+    @State private var showRerollExerciseAlert = false
+    @State private var viewDidLoad = false
     
     var body: some View {
             VStack {
@@ -26,8 +29,8 @@ struct LiftingDiceExercisesContentView: View {
                         VStack {
                             Text("Dislike one of your options? Reroll that exercise, or reroll them all.").padding(16)
                             LazyVGrid(columns: columns) {
-                                ForEach(liftingDiceExerciseViewModel.randomizedExercises, id: \.id) { exercise in
-                                    ExerciseCardView(liftingDiceExerciseViewModel: liftingDiceExerciseViewModel, exercise: exercise)
+                                ForEach(Array(liftingDiceExerciseViewModel.randomizedExercises.enumerated()), id: \.element) { index, exercise in
+                                    ExerciseCardView(liftingDiceExerciseViewModel: liftingDiceExerciseViewModel, exercise: exercise, exerciseIndex: index)
                                 }
                             }
                             Text("All these exercises are only suggestions. Perform only what you are comfortable with. Never push yourself over your limits, and listen to your body.").padding(16)
@@ -40,11 +43,29 @@ struct LiftingDiceExercisesContentView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Reroll All") {
-                        liftingDiceExerciseViewModel.rerollAllExercises()
-                    }.disabled(liftingDiceExerciseViewModel.filteredExercises.count <= 6)
+                        if (liftingDiceExerciseViewModel.rerolls <= 0) {
+                            showRerollAllAlert = true
+                        } else {
+                            liftingDiceExerciseViewModel.rerollAllExercises()
+                        }
+                    }
+                    .alert("Out of Rerolls", isPresented: $showRerollAllAlert) {
+                        Button("Watch Ad") {
+                            liftingDiceExerciseViewModel.showAd(rerollExercise: nil)
+                        }
+                        Button("Cancel", role: .cancel) {}
+                    } message: {
+                        Text("You are out of rerolls. Would you like to watch and ad for more rerolls?")
+                    }
+                    .disabled(liftingDiceExerciseViewModel.filteredExercises.count <= 6)
                 }
         }.onAppear {
-            liftingDiceExerciseViewModel.startExercisesObserving(selectedMuscleGroups: self.selectedMusleGroups)
+            if (viewDidLoad == false) {
+                liftingDiceExerciseViewModel.startExercisesObserving(selectedMuscleGroups: self.selectedMusleGroups)
+                viewDidLoad = true
+            }
+        }.task {
+            await liftingDiceExerciseViewModel.loadAd()
         }
     }
 }
@@ -57,14 +78,17 @@ struct ExerciseCardView: View {
     
     let liftingDiceExerciseViewModel: LiftingDiceExercisesViewModel
     let exercise: Exercise
-    @State private var exerciseName = ""
+    let exerciseIndex: Int
+    @State private var showRerollExerciseAlert = false
+    @State private var exerciseName = "Push ups"
     let timer = Timer.publish(every: 0.25, on: .main, in: .common).autoconnect()
     @State private var counter = 0
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 25).fill(Color.white).shadow(radius: 10)
-            
+            RoundedRectangle(cornerRadius: 25).fill(Color.accentColor).shadow(radius: 10)
+            let _ = print(exercise.name)
+            let _ = print(exerciseIndex)
             VStack {
                 HStack {
                     Text(exerciseName.capitalized)
@@ -95,10 +119,23 @@ struct ExerciseCardView: View {
                             Image(systemName: "info.circle")
                         }.padding(.trailing, 12).padding(.top, 8)
                         Button {
-                            liftingDiceExerciseViewModel.rerollExercise(exercise: exercise)
+                            if (liftingDiceExerciseViewModel.rerolls <= 0) {
+                                showRerollExerciseAlert = true
+                            } else {
+                                liftingDiceExerciseViewModel.rerollExercise(exercise: exercise)
+                            }
                         } label: {
                             Image("rerollIcon").resizable().aspectRatio(contentMode: .fit).frame(width: 24, height: 24)
-                        }.padding(.trailing, 12).padding(.bottom, 8).opacity(liftingDiceExerciseViewModel.filteredExercises.count > 6 ? 1: 0)
+                        }
+                        .alert("Out of Rerolls", isPresented: $showRerollExerciseAlert) {
+                            Button("Watch Ad") {
+                                liftingDiceExerciseViewModel.showAd(rerollExercise: exercise)
+                            }
+                            Button("Cancel", role: .cancel) {}
+                        } message: {
+                            Text("You are out of rerolls. Would you like to watch and ad for more rerolls?")
+                        }
+                        .padding(.trailing, 12).padding(.bottom, 8).opacity(liftingDiceExerciseViewModel.filteredExercises.count > 6 ? 1: 0)
                     }
                 }
             }
