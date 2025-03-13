@@ -9,13 +9,21 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            storeFile = file("/Users/mykalcuin/Documents/LiftingDice/liftingDiceAndroidKeyStore")
+            storePassword = "LiftingDiceKeyPass"
+            keyAlias = "LiftingDiceKey"
+            keyPassword = "LiftingDiceKeyPass"
+        }
+    }
     namespace = "com.cuinsolutions.liftingdice.android"
     compileSdk = 35
     defaultConfig {
         applicationId = "com.cuinsolutions.liftingdice.android"
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
     }
     buildFeatures {
@@ -27,9 +35,24 @@ android {
         }
     }
     buildTypes {
-        getByName("release") {
+        release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("debug")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            resValue("string", "muscle_groups_banner_ad_unit_id", "ca-app-pub-6601965971959563/3793773338")
+            resValue("string", "equipment_settings_banner_ad_unit_id", "ca-app-pub-6601965971959563/2480691668")
+            resValue("string", "exercises_banner_ad_unit_id", "ca-app-pub-6601965971959563/2436459632")
+            resValue("string", "exercises_reroll_rewarded_ad_unit_id", "ca-app-pub-6601965971959563/4139218264")
+        }
+        debug {
+            isMinifyEnabled = false
+            resValue("string", "muscle_groups_banner_ad_unit_id", "ca-app-pub-3940256099942544/9214589741")
+            resValue("string", "equipment_settings_banner_ad_unit_id", "ca-app-pub-3940256099942544/9214589741")
+            resValue("string", "exercises_banner_ad_unit_id", "ca-app-pub-3940256099942544/9214589741")
+            resValue("string", "exercises_reroll_rewarded_ad_unit_id", "ca-app-pub-3940256099942544/5224354917")
         }
     }
     compileOptions {

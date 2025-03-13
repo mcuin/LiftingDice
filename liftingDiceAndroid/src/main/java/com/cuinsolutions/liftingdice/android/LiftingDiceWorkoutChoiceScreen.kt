@@ -30,6 +30,7 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.cuinsolutions.liftingdice.BuildConfig
 import com.cuinsolutions.liftingdice.MuscleGroup
 import org.koin.androidx.compose.koinViewModel
 
@@ -39,7 +40,7 @@ fun LiftingDiceWorkoutChoiceScreen(modifier: Modifier, canNavBack: Boolean, canN
     val uiState = viewModel.muscleGroups.collectAsStateWithLifecycle()
 
     Scaffold(modifier = modifier.fillMaxSize(), topBar = { LiftingDiceAppBar(titleId = R.string.app_name, canNavBack = canNavBack, canNavigateToEquipmentSettings = canNavigateToEquipmentSettings, navigateBack = navigateBack, onNavigateToEquipmentSettings = onNavigateToEquipmentSettingsScreen) },
-        bottomBar = { BannerAdview() },
+        bottomBar = { BannerAdview(stringResource(R.string.muscle_groups_banner_ad_unit_id)) },
         floatingActionButton = { if (uiState.value is LiftingDiceWorkoutChoiceScreenState.Success && (uiState.value as LiftingDiceWorkoutChoiceScreenState.Success).selectedMuscleGroups.isNotEmpty()) MuscleGroupsFAB(onNavigateToExercisesScreen, (uiState.value as LiftingDiceWorkoutChoiceScreenState.Success).selectedMuscleGroups) }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
 

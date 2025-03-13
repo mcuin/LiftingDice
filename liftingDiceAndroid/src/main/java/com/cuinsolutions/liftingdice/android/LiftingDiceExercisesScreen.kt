@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,6 +26,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -31,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +56,7 @@ import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -58,7 +64,13 @@ fun LiftingDiceExercisesScreen(modifier: Modifier, muscleGroupIds: List<Int>, ca
 
     val exerciseState = liftingDiceExercisesScreenViewModel.exercisesUiState.collectAsStateWithLifecycle()
     val context = LocalActivity.current as Activity
-    val rewardedAd = remember { ExercisesRerollRewardedAd(liftingDiceExercisesScreenViewModel) }
+    val snackBarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val rewardedAd = remember { ExercisesRerollRewardedAd(exerciseRerollAdUnitId = context.getString(R.string.exercises_reroll_rewarded_ad_unit_id), liftingDiceExercisesScreenViewModel, adFailedToShow = { adFailedToShow -> if (adFailedToShow) {
+        coroutineScope.launch {
+            snackBarHostState.showSnackbar(context.getString(R.string.exercises_rewarded_ad_failed))
+        }
+    } }) }
     var showRerollAlert by remember { mutableStateOf(Pair(false, -1)) }
 
     LaunchedEffect(key1 = Unit) {
@@ -67,8 +79,10 @@ fun LiftingDiceExercisesScreen(modifier: Modifier, muscleGroupIds: List<Int>, ca
 
     Scaffold(modifier = modifier, topBar = { LiftingDiceAppBar(titleId = R.string.exercises_roll_title, canNavBack = canGoBack, canNavigateToEquipmentSettings = canGoToEquipmentSettings, navigateBack = onNavigateBack, onNavigateToEquipmentSettings = onNavigateToEquipmentSettings) },
         floatingActionButton = { if (liftingDiceExercisesScreenViewModel.filteredExercises.count() > 6) ExercisesReRollAllFab(modifier = modifier, viewModel = liftingDiceExercisesScreenViewModel, showRerollAlert = { reoll, index -> showRerollAlert = Pair(reoll, index) }) },
-        bottomBar = { BannerAdview() }) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
+        bottomBar = { BannerAdview(stringResource(R.string.exercises_banner_ad_unit_id)) },
+        snackbarHost = { SnackbarHost(snackBarHostState) }) { padding ->
+        rewardedAd.loadRewardedVideoAd(context)
+        Column(modifier = modifier.padding(padding)) {
             when (val state = exerciseState.value) {
                 is ExercisesLoadState.Error -> {
                     Text(
@@ -78,7 +92,7 @@ fun LiftingDiceExercisesScreen(modifier: Modifier, muscleGroupIds: List<Int>, ca
                 }
 
                 ExercisesLoadState.Loading -> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column {
                             CircularProgressIndicator()
                             Text(
@@ -93,7 +107,6 @@ fun LiftingDiceExercisesScreen(modifier: Modifier, muscleGroupIds: List<Int>, ca
 
                 is ExercisesLoadState.Success -> {
 
-                    rewardedAd.loadRewardedVideoAd(context)
                     Text(
                         modifier = modifier.fillMaxWidth()
                             .padding(dimensionResource(R.dimen.standard_padding)),
@@ -228,7 +241,7 @@ fun RerollAlert(reRollAlertTitle: String, reRollAlertDescription: String, onDism
         })
 }
 
-class ExercisesRerollRewardedAd(val liftingDiceExercisesScreenViewModel: LiftingDiceExercisesScreenViewModel) {
+class ExercisesRerollRewardedAd(val exerciseRerollAdUnitId: String, val liftingDiceExercisesScreenViewModel: LiftingDiceExercisesScreenViewModel, val adFailedToShow: (Boolean) -> Unit) {
 
     private var rewardedAd: RewardedAd? = null
 
@@ -238,14 +251,14 @@ class ExercisesRerollRewardedAd(val liftingDiceExercisesScreenViewModel: Lifting
 
         RewardedAd.load(
             activity,
-            "ca-app-pub-3940256099942544/5224354917",
+            exerciseRerollAdUnitId,
             adRequest,
             object : RewardedAdLoadCallback() {
 
                 override fun onAdFailedToLoad(p0: LoadAdError) {
                     super.onAdFailedToLoad(p0)
                     rewardedAd = null
-                    println("Ad failed to load")
+                    println("Ad failed to load: ${p0.message}")
                 }
 
                 override fun onAdLoaded(ad: RewardedAd) {
@@ -259,6 +272,7 @@ class ExercisesRerollRewardedAd(val liftingDiceExercisesScreenViewModel: Lifting
     fun showRewardedAd(activity: Activity, index: Int) {
         if (rewardedAd == null) {
             println("Ad null")
+            adFailedToShow(true)
             return
         }
         rewardedAd?.show(activity) { rewardItem ->
@@ -283,7 +297,7 @@ class ExercisesRerollRewardedAd(val liftingDiceExercisesScreenViewModel: Lifting
 
             override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                 super.onAdFailedToShowFullScreenContent(p0)
-                println("Ad failed to show")
+                println("Ad failed to show: ${p0.message}")
                 rewardedAd = null
             }
 

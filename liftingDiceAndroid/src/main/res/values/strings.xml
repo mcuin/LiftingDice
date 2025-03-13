@@ -23,4 +23,5 @@
     <string name="equipment_settings_error">Error loading equipment settings. Please try again later.</string>
     <string name="exercises_loading">Loading exercises</string>
     <string name="exercises_error">Error loading exercises. Please try again later.</string>
+    <string name="exercises_rewarded_ad_failed">The video ad failed to play. Check for any connection issues or ad block settings and please try again soon.</string>
 </resources>

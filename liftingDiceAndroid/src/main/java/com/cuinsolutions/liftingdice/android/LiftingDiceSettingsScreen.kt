@@ -42,7 +42,7 @@ fun LiftingDiceSettingsScreen(modifier: Modifier, canNavigateBack: Boolean, navi
     Scaffold(modifier = modifier, topBar = {
         LiftingDiceAppBar(titleId = R.string.equipment_settings_title, canNavBack = canNavigateBack, navigateBack = navigateBack, canNavigateToEquipmentSettings = false, onNavigateToEquipmentSettings = onNavigateToEquipmentSettings)
     }, bottomBar = {
-        BannerAdview()
+        BannerAdview(stringResource(R.string.equipment_settings_banner_ad_unit_id))
     }, floatingActionButton = {
         if ((equipmentSettingUiState is LiftingDiceSettingsScreenState.Success) && (equipmentSettingUiState as LiftingDiceSettingsScreenState.Success).selectedEquipmentIds.isNotEmpty())
             EquipmentSettingFAB(modifier = modifier, navigateBack = navigateBack, viewModel = liftingDiceSettingsViewModel)

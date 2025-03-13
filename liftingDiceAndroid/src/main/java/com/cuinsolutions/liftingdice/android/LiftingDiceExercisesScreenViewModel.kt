@@ -93,8 +93,10 @@ class LiftingDiceExercisesScreenViewModel(private val firebaseRealtimeDatabaseFu
                     randomExercises.add(index, randomExercise)
                 }
             }
-            _exercisesUiState.update {
-                ExercisesLoadState.Success(successState.allFilteredExercises, successState.diceAmount, randomExercises)
+            _exercisesUiState.update { currentState ->
+                (currentState as ExercisesLoadState.Success).copy(
+                    randomExercises = randomExercises
+                )
             }
             updateRerolls()
         }
@@ -108,8 +110,10 @@ class LiftingDiceExercisesScreenViewModel(private val firebaseRealtimeDatabaseFu
                 val randomExercise = filteredExercises.random()
                 randomExercises.add(randomExercise)
             }
-            _exercisesUiState.update {
-                ExercisesLoadState.Success(successState.allFilteredExercises, successState.diceAmount, randomExercises.toList())
+            _exercisesUiState.update { currentState ->
+                (currentState as ExercisesLoadState.Success).copy(
+                    randomExercises = randomExercises.toList()
+                )
             }
             updateRerolls()
         }
