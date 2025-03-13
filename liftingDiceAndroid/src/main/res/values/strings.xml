@@ -17,4 +17,10 @@
     <string name="exercise_out_of_rerolls_watch_ad">Watch Ad</string>
     <string name="cancel">Cancel</string>
     <string name="equipment_setting_onboarding_description">Please select all of the equipment you have access to.</string>
+    <string name="select_muscle_groups_loading">Loading muscle groups</string>
+    <string name="select_muscle_groups_error">Error loading muscle groups. Please try again later.</string>
+    <string name="equipment_settings_loading">Loading equipment settings</string>"
+    <string name="equipment_settings_error">Error loading equipment settings. Please try again later.</string>
+    <string name="exercises_loading">Loading exercises</string>
+    <string name="exercises_error">Error loading exercises. Please try again later.</string>
 </resources>

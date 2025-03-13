@@ -5,8 +5,11 @@ import android.app.SearchManager
 import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cuinsolutions.liftingdice.Exercise
@@ -63,34 +68,71 @@ fun LiftingDiceExercisesScreen(modifier: Modifier, muscleGroupIds: List<Int>, ca
     Scaffold(modifier = modifier, topBar = { LiftingDiceAppBar(titleId = R.string.exercises_roll_title, canNavBack = canGoBack, canNavigateToEquipmentSettings = canGoToEquipmentSettings, navigateBack = onNavigateBack, onNavigateToEquipmentSettings = onNavigateToEquipmentSettings) },
         floatingActionButton = { if (liftingDiceExercisesScreenViewModel.filteredExercises.count() > 6) ExercisesReRollAllFab(modifier = modifier, viewModel = liftingDiceExercisesScreenViewModel, showRerollAlert = { reoll, index -> showRerollAlert = Pair(reoll, index) }) },
         bottomBar = { BannerAdview() }) { padding ->
-
-        when(val state = exerciseState.value) {
-            is ExercisesLoadState.Error -> {}
-            ExercisesLoadState.Loading -> {}
-            is ExercisesLoadState.Success -> {
-                Column(modifier = Modifier.padding(padding)) {
-                    rewardedAd.loadRewardedVideoAd(context)
-                    Text(modifier = modifier.fillMaxWidth().padding(dimensionResource(R.dimen.standard_padding)), text = stringResource(R.string.exercises_description),
-                        style = MaterialTheme.typography.bodyMedium)
-                    LazyVerticalGrid(modifier = modifier.fillMaxWidth(), columns = GridCells.Fixed(2)) {
-                        itemsIndexed(state.randomExercises) { index, exercise ->
-                            ExerciseCard(modifier = modifier, exercise = exercise, index = index, viewModel = liftingDiceExercisesScreenViewModel, showRerollAlert = { reroll, index -> showRerollAlert = Pair(reroll, index) })
-                        }
-                    }
-                    Text(modifier = modifier.fillMaxWidth().padding(dimensionResource(R.dimen.standard_padding)), text = stringResource(R.string.exercises_warning),
-                        style = MaterialTheme.typography.bodyMedium)
+        Column(modifier = Modifier.padding(padding)) {
+            when (val state = exerciseState.value) {
+                is ExercisesLoadState.Error -> {
+                    Text(
+                        modifier = modifier.padding(padding),
+                        text = stringResource(R.string.exercises_error)
+                    )
                 }
 
-                if (showRerollAlert.first) {
-                    RerollAlert(reRollAlertTitle = context.getString(R.string.exercise_out_of_rerolls_title),
-                        context.getString(R.string.exercise_out_of_rerolls_description),
-                        onDismiss = {
-                            showRerollAlert = showRerollAlert.copy(first = false)
-                        },
-                        onConfirm = {
-                            showRerollAlert = showRerollAlert.copy(first = false)
-                            rewardedAd.showRewardedAd(context, showRerollAlert.second)
-                        })
+                ExercisesLoadState.Loading -> {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column {
+                            CircularProgressIndicator()
+                            Text(
+                                modifier = modifier.fillMaxWidth().padding(dimensionResource(R.dimen.standard_padding)),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodyLarge,
+                                text = stringResource(R.string.exercises_loading)
+                            )
+                        }
+                    }
+                }
+
+                is ExercisesLoadState.Success -> {
+
+                    rewardedAd.loadRewardedVideoAd(context)
+                    Text(
+                        modifier = modifier.fillMaxWidth()
+                            .padding(dimensionResource(R.dimen.standard_padding)),
+                        text = stringResource(R.string.exercises_description),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    LazyVerticalGrid(
+                        modifier = modifier.fillMaxWidth(),
+                        columns = GridCells.Fixed(2)
+                    ) {
+                        itemsIndexed(state.randomExercises) { index, exercise ->
+                            ExerciseCard(
+                                modifier = modifier,
+                                exercise = exercise,
+                                index = index,
+                                viewModel = liftingDiceExercisesScreenViewModel,
+                                showRerollAlert = { reroll, index ->
+                                    showRerollAlert = Pair(reroll, index)
+                                })
+                        }
+                    }
+                    Text(
+                        modifier = modifier.fillMaxWidth()
+                            .padding(dimensionResource(R.dimen.standard_padding)),
+                        text = stringResource(R.string.exercises_warning),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+
+                    if (showRerollAlert.first) {
+                        RerollAlert(reRollAlertTitle = context.getString(R.string.exercise_out_of_rerolls_title),
+                            context.getString(R.string.exercise_out_of_rerolls_description),
+                            onDismiss = {
+                                showRerollAlert = showRerollAlert.copy(first = false)
+                            },
+                            onConfirm = {
+                                showRerollAlert = showRerollAlert.copy(first = false)
+                                rewardedAd.showRewardedAd(context, showRerollAlert.second)
+                            })
+                    }
                 }
             }
         }

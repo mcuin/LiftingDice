@@ -1,5 +1,6 @@
 package com.cuinsolutions.liftingdice.android
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -28,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cuinsolutions.liftingdice.EquipmentSetting
@@ -50,8 +53,23 @@ fun LiftingDiceSettingsScreen(modifier: Modifier, canNavigateBack: Boolean, navi
         Column(modifier = modifier.padding(paddingValues)) {
 
             when(val state = equipmentSettingUiState) {
-                is LiftingDiceSettingsScreenState.Loading -> {}
-                is LiftingDiceSettingsScreenState.Error -> {}
+                is LiftingDiceSettingsScreenState.Loading -> {
+                    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator()
+                            Text(
+                                modifier = modifier.fillMaxWidth()
+                                    .padding(dimensionResource(R.dimen.standard_padding)),
+                                text = stringResource(R.string.equipment_settings_loading),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                }
+                is LiftingDiceSettingsScreenState.Error -> {
+                    Text(modifier = modifier.fillMaxWidth().padding(dimensionResource(R.dimen.standard_padding)), text = stringResource(R.string.equipment_settings_error), style = MaterialTheme.typography.titleLarge)
+                }
                 is LiftingDiceSettingsScreenState.Success -> {
                     if (!canNavigateBack) {
                         Text(modifier = modifier.fillMaxWidth().padding(dimensionResource(R.dimen.standard_padding)), text = stringResource(R.string.equipment_setting_onboarding_description), style = MaterialTheme.typography.titleLarge)

@@ -31,7 +31,7 @@ class LiftingDiceSettingsViewModel(private val firebaseRealtimeDatabaseFunctions
     val equipmentSettingsUiState = combine(firebaseRealtimeDatabaseFunctions.getEquipmentSettings(), dataStoreFlow, selectedEquipmentIdsFlow) { equipmentSettings, _, selectedEquipmentIds ->
         when {
             equipmentSettings.isNotEmpty() -> LiftingDiceSettingsScreenState.Success(equipmentSettings, selectedEquipmentIds)
-            else -> LiftingDiceSettingsScreenState.Loading
+            else -> LiftingDiceSettingsScreenState.Error
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), LiftingDiceSettingsScreenState.Loading)
 
@@ -59,5 +59,5 @@ class LiftingDiceSettingsViewModel(private val firebaseRealtimeDatabaseFunctions
 sealed class LiftingDiceSettingsScreenState {
     data object Loading: LiftingDiceSettingsScreenState()
     data class Success(val equipmentSettings: List<EquipmentSetting>, val selectedEquipmentIds: List<Int>): LiftingDiceSettingsScreenState()
-    data class Error(val message: String): LiftingDiceSettingsScreenState()
+    data object Error: LiftingDiceSettingsScreenState()
 }

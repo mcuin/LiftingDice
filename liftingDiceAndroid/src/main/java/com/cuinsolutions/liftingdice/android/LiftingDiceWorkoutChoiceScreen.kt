@@ -1,5 +1,6 @@
 package com.cuinsolutions.liftingdice.android
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -29,6 +31,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cuinsolutions.liftingdice.MuscleGroup
@@ -45,8 +48,20 @@ fun LiftingDiceWorkoutChoiceScreen(modifier: Modifier, canNavBack: Boolean, canN
         Column(modifier = Modifier.padding(paddingValues)) {
 
             when (val state = uiState.value) {
-                is LiftingDiceWorkoutChoiceScreenState.Error -> {}
-                is LiftingDiceWorkoutChoiceScreenState.Loading -> {}
+                is LiftingDiceWorkoutChoiceScreenState.Error -> {
+                    Text(modifier = modifier.align(Alignment.CenterHorizontally), text = stringResource(id = R.string.select_muscle_groups_error))
+                }
+                is LiftingDiceWorkoutChoiceScreenState.Loading -> {
+                    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator()
+                            Text(modifier = modifier.align(Alignment.CenterHorizontally),
+                                text = stringResource(id = R.string.select_muscle_groups_loading),
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                }
                 is LiftingDiceWorkoutChoiceScreenState.Success -> {
                     LazyColumn(modifier = modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = dimensionResource(R.dimen.fab_bottom_content_padding))) {
                         items(state.muscleGroups) {
