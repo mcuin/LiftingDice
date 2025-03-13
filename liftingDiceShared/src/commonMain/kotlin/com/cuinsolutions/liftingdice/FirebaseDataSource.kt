@@ -3,7 +3,6 @@ package com.cuinsolutions.liftingdice
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.database.FirebaseDatabase
 import dev.gitlive.firebase.database.database
-import org.koin.core.component.KoinComponent
 
 class FirebaseDataSource {
     val firebaseDatabase: FirebaseDatabase = when {

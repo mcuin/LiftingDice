@@ -1,5 +1,6 @@
 package com.cuinsolutions.liftingdice.android
 
+import UserPreferencesOuterClass
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

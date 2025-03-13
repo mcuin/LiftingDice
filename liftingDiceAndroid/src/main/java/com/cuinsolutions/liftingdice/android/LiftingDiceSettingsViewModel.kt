@@ -1,20 +1,18 @@
 package com.cuinsolutions.liftingdice.android
 
+import UserPreferencesOuterClass
 import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cuinsolutions.liftingdice.EquipmentSetting
 import com.cuinsolutions.liftingdice.FirebaseRealtimeDatabaseFunctions
-import com.cuinsolutions.liftingdice.android.utils.DataStoreModule
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.toSet
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.android.annotation.KoinViewModel
 
 class LiftingDiceSettingsViewModel(private val firebaseRealtimeDatabaseFunctions: FirebaseRealtimeDatabaseFunctions, private val dataStore: DataStore<UserPreferencesOuterClass.UserPreferences>): ViewModel() {
 
