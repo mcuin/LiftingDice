@@ -54,9 +54,12 @@ fun LiftingDiceAppBar(titleId: Int, canNavBack: Boolean, navigateBack: () -> Uni
 }
 
 @Composable
-fun LiftingDiceAppScreen(navController: NavHostController = rememberNavController()) {
+fun LiftingDiceAppScreen(navController: NavHostController = rememberNavController(), hasEquipmentSettings: Boolean) {
     Column(modifier = Modifier.fillMaxSize()) {
-        NavHost(navController = navController, startDestination = LiftingDiceWorkoutChoiceScreen) {
+        NavHost(navController = navController, startDestination = if (hasEquipmentSettings) LiftingDiceWorkoutChoiceScreen else LiftingDiceEquipmentOnboarding) {
+            composable<LiftingDiceEquipmentOnboarding> {
+                LiftingDiceSettingsScreen(modifier = Modifier, canNavigateBack = false, navigateBack = {}, canNavigateToEquipmentSettings = false, onNavigateToEquipmentSettings = {})
+            }
             composable<LiftingDiceWorkoutChoiceScreen> {
                 LiftingDiceWorkoutChoiceScreen(modifier = Modifier, canNavBack = false, canNavigateToEquipmentSettings = true, navigateBack = {}, onNavigateToEquipmentSettingsScreen = {
                     navController.navigate(LiftingDiceSettingsScreen)
@@ -89,6 +92,8 @@ fun BannerAdview() {
         .fillMaxWidth())
 }
 
+@Serializable
+object LiftingDiceEquipmentOnboarding
 @Serializable
 object LiftingDiceWorkoutChoiceScreen
 @Serializable

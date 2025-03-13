@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.protobuf.kotlin)
     implementation(libs.json.serialization)
     implementation(libs.compose.navigation)
+    implementation(libs.splashScreen)
     androidTestImplementation(libs.compose.navigation.testing)
     debugImplementation(libs.compose.ui.tooling)
 }

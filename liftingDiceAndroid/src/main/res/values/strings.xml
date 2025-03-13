@@ -16,4 +16,5 @@
     <string name="exercise_out_of_rerolls_description">You are out of rerolls. Do you want to watch and ad for more?</string>
     <string name="exercise_out_of_rerolls_watch_ad">Watch Ad</string>
     <string name="cancel">Cancel</string>
+    <string name="equipment_setting_onboarding_description">Please select all of the equipment you have access to.</string>
 </resources>

@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
@@ -52,6 +53,9 @@ fun LiftingDiceSettingsScreen(modifier: Modifier, canNavigateBack: Boolean, navi
                 is LiftingDiceSettingsScreenState.Loading -> {}
                 is LiftingDiceSettingsScreenState.Error -> {}
                 is LiftingDiceSettingsScreenState.Success -> {
+                    if (!canNavigateBack) {
+                        Text(modifier = modifier.fillMaxWidth().padding(dimensionResource(R.dimen.standard_padding)), text = stringResource(R.string.equipment_setting_onboarding_description), style = MaterialTheme.typography.titleLarge)
+                    }
                     LazyColumn(modifier = modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = dimensionResource(R.dimen.fab_bottom_content_padding))) {
                         itemsIndexed(state.equipmentSettings) { index, equipmentSetting ->
                             EquipmentSettingCard(modifier = modifier, equipmentSetting = equipmentSetting, viewModel = liftingDiceSettingsViewModel, selectedEquipmentSetting = state.selectedEquipmentIds.contains(equipmentSetting.id))

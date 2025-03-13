@@ -1,5 +1,6 @@
 package com.cuinsolutions.liftingdice.android.utils
 
+import com.cuinsolutions.liftingdice.android.LiftingDiceActivityViewModel
 import com.cuinsolutions.liftingdice.android.LiftingDiceExercisesScreenViewModel
 import com.cuinsolutions.liftingdice.android.LiftingDiceSettingsViewModel
 import com.cuinsolutions.liftingdice.android.LiftingDiceWorkoutChoiceScreenViewModel
@@ -17,4 +18,5 @@ val androidModule = module {
     viewModel { LiftingDiceWorkoutChoiceScreenViewModel(get()) }
     viewModel { LiftingDiceSettingsViewModel(get(), get()) }
     viewModel { LiftingDiceExercisesScreenViewModel(get(), get()) }
+    viewModel { LiftingDiceActivityViewModel(get()) }
 }

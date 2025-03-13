@@ -6,9 +6,10 @@
 
     <application
         android:name=".LiftingDiceApplication"
+        android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.AppStart">
         <activity
             android:name=".LiftingDiceActivity"
             android:exported="true">

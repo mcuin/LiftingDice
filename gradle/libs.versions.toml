@@ -19,6 +19,7 @@ dataStore = "1.1.3"
 protobuf = "4.29.3"
 protobufGoogle = "0.9.3"
 compose-navigation = "2.8.8"
+splashsScreen = "1.0.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -49,6 +50,7 @@ protobuf-java = { module = "com.google.protobuf:protobuf-javalite", version.ref 
 protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin-lite", version.ref = "protobuf" }
 compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "compose-navigation" }
 compose-navigation-testing = { module = "androidx.navigation:navigation-testing", version.ref = "compose-navigation" }
+splashScreen = { module = "androidx.core:core-splashscreen", version.ref = "splashsScreen" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
