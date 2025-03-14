@@ -36,7 +36,6 @@ import CoreData
             }, receiveValue: { value in
                 self.equipmentSettings = value as! [EquipmentSetting]
                 let selectedEquipmentIds = DataController.shared.getSelectedEquipmentSettings().first?.selectedEquipmentIds ?? []
-                print(DataController.shared.getSelectedEquipmentSettings().count)
                 let selectedEquipment = self.equipmentSettings.filter { equipmentSetting in
                     selectedEquipmentIds.contains(where: { selectedId in
                         selectedId == equipmentSetting.id

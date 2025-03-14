@@ -18,11 +18,12 @@ struct BannerContentView: View {
         return GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(width).size
     }
     
-    init(adUnitId: String = "ca-app-pub-3940256099942544/2934735716") {
+    init(adUnitId: String) {
         self.adUnitId = adUnitId
     }
     
     var body: some View {
+        let _ = print(adUnitId)
         BannerView(GADCurrentOrientationAnchoredAdaptiveBannerAdSizeWithWidth(width), adUnitId: adUnitId).frame(height: size.height)
     }
 }

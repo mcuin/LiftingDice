@@ -14,7 +14,7 @@ struct LiftingDiceWorkoutChoiceContentView: View {
                 List(liftingDiceWorkoutChoiceViewModel.muscleGroups, id: \.self, selection: $selectedGroups) { muscleGroup in
                     Text(muscleGroup.name.capitalized)
                 }.environment(\.editMode, .constant(.active))
-                BannerContentView()
+                BannerContentView(adUnitId: Bundle.main.object(forInfoDictionaryKey: "MUSCLE_GROUPS_BANNER_AD_ID") as! String)
             }
             .navigationTitle("Muscle Groups")
             .toolbar {

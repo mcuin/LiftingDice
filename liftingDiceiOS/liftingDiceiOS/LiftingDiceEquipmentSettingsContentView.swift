@@ -11,7 +11,7 @@ import liftingDiceShared
 
 struct LiftingDiceEquipmentSettingsContentView: View {
     
-    @Binding var tabSelection: String
+    @Binding var tabSelection: String?
     @State var liftingDiceEquipmentSettingsViewModel = LiftingDiceEquipmentSettingsViewModel()
     
     var body: some View {
@@ -20,7 +20,7 @@ struct LiftingDiceEquipmentSettingsContentView: View {
             List(liftingDiceEquipmentSettingsViewModel.equipmentSettings, id: \.self, selection: $liftingDiceEquipmentSettingsViewModel.selectedEquipmentSettings) { equipmentSetting in
                 Text(equipmentSetting.name.capitalized)
             }.environment(\.editMode, .constant(.active))
-            BannerContentView()
+            BannerContentView(adUnitId: Bundle.main.object(forInfoDictionaryKey: "EQUIPMENT_SETTINGS_BANNER_AD_ID") as! String)
         }
         .navigationTitle(Text("Equipment Settings"))
         .toolbar {

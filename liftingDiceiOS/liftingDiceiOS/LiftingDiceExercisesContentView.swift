@@ -30,14 +30,14 @@ struct LiftingDiceExercisesContentView: View {
                             Text("Dislike one of your options? Reroll that exercise, or reroll them all.").padding(16)
                             LazyVGrid(columns: columns) {
                                 ForEach(Array(liftingDiceExerciseViewModel.randomizedExercises.enumerated()), id: \.element) { index, exercise in
-                                    ExerciseCardView(liftingDiceExerciseViewModel: liftingDiceExerciseViewModel, exercise: exercise, exerciseIndex: index)
+                                    ExerciseCardView(liftingDiceExerciseViewModel: $liftingDiceExerciseViewModel, exercise: exercise, exerciseIndex: index)
                                 }
                             }
                             Text("All these exercises are only suggestions. Perform only what you are comfortable with. Never push yourself over your limits, and listen to your body.").padding(16)
                         }
                     }
                 }
-                BannerContentView()
+                BannerContentView(adUnitId: Bundle.main.object(forInfoDictionaryKey: "EXERCISE_BANNER_AD_ID") as! String)
             }
             .navigationTitle(Text("Exercises"))
             .toolbar {
@@ -56,6 +56,11 @@ struct LiftingDiceExercisesContentView: View {
                         Button("Cancel", role: .cancel) {}
                     } message: {
                         Text("You are out of rerolls. Would you like to watch and ad for more rerolls?")
+                    }
+                    .alert("Ad Failed to Load", isPresented: $liftingDiceExerciseViewModel.adFailedToLoad) {
+                        Button("Ok", role: .cancel) {}
+                    } message: {
+                        Text("The video ad failed to load. Check your network connection or ad blocking and try again soon.")
                     }
                     .disabled(liftingDiceExerciseViewModel.filteredExercises.count <= 6)
                 }
@@ -76,7 +81,7 @@ struct LiftingDiceExercisesContentView: View {
 
 struct ExerciseCardView: View {
     
-    let liftingDiceExerciseViewModel: LiftingDiceExercisesViewModel
+    @Binding var liftingDiceExerciseViewModel: LiftingDiceExercisesViewModel
     let exercise: Exercise
     let exerciseIndex: Int
     @State private var showRerollExerciseAlert = false
@@ -86,7 +91,7 @@ struct ExerciseCardView: View {
     
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 25).fill(Color.accentColor).shadow(radius: 10)
+            RoundedRectangle(cornerRadius: 25).fill(Color.black).shadow(radius: 10)
             let _ = print(exercise.name)
             let _ = print(exerciseIndex)
             VStack {
@@ -101,7 +106,7 @@ struct ExerciseCardView: View {
                                 exerciseName = liftingDiceExerciseViewModel.filteredExercises.randomElement()!.name
                                 counter += 1
                             }
-                        }.frame(alignment: .leading).padding(8)
+                        }.frame(alignment: .leading).padding(8).foregroundColor(.white)
                     Spacer()
                     VStack(alignment: .trailing) {
                         Button {
@@ -117,7 +122,7 @@ struct ExerciseCardView: View {
                             }
                         } label: {
                             Image(systemName: "info.circle")
-                        }.padding(.trailing, 12).padding(.top, 8)
+                        }.padding(.trailing, 12).padding(.top, 8).foregroundColor(.white)
                         Button {
                             if (liftingDiceExerciseViewModel.rerolls <= 0) {
                                 showRerollExerciseAlert = true
@@ -135,7 +140,14 @@ struct ExerciseCardView: View {
                         } message: {
                             Text("You are out of rerolls. Would you like to watch and ad for more rerolls?")
                         }
-                        .padding(.trailing, 12).padding(.bottom, 8).opacity(liftingDiceExerciseViewModel.filteredExercises.count > 6 ? 1: 0)
+                        .alert("Ad Failed to Load", isPresented: $liftingDiceExerciseViewModel.adFailedToLoad) {
+                            Button("Ok", role: .cancel) {}
+                        } message: {
+                            Text("The video ad failed to load. Check your network connection or ad blocking and try again soon.")
+                        }
+                        .padding(.trailing, 12).padding(.bottom, 8)
+                        .foregroundColor(.white)
+                        .opacity(liftingDiceExerciseViewModel.filteredExercises.count > 6 ? 1: 0)
                     }
                 }
             }

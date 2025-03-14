@@ -22,6 +22,7 @@ import GoogleMobileAds
     private let dataController: DataController = .init()
     var rerolls = 0
     private var rewardedAd: GADRewardedAd?
+    var adFailedToLoad = false
     
     override init() {
         let equipmentSettingsrequest = NSFetchRequest<EquipmentSettings>(entityName: "EquipmentSettings")
@@ -87,6 +88,10 @@ import GoogleMobileAds
         }
     }
     
+    func updateAdFailedLoad() {
+        adFailedToLoad = false
+    }
+    
     func startExercisesObserving(selectedMuscleGroups: Set<MuscleGroup>) {
         let firebaseHelper = FirebaseHelper()
         let exercisesSubscription: () = flow(firebaseHelper.getExercises())
@@ -145,15 +150,17 @@ import GoogleMobileAds
     
     func loadAd() async {
         do {
-            rewardedAd = try await GADRewardedAd.load(withAdUnitID: "ca-app-pub-3940256099942544/1712485313", request: GADRequest())
+            rewardedAd = try await GADRewardedAd.load(withAdUnitID: Bundle.main.object(forInfoDictionaryKey: "EXERCISE_REROLL_AD_ID") as! String, request: GADRequest())
             rewardedAd?.fullScreenContentDelegate = self
         } catch {
+            adFailedToLoad = true
             print("Failed to load rewarded ad: \(error)")
         }
     }
     
     func showAd(rerollExercise: Exercise?) {
         guard let rewardedAd = rewardedAd else {
+            adFailedToLoad = true
             return print("Ad wasn't loaded yet.")
         }
         
