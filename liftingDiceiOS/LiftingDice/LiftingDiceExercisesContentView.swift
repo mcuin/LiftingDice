@@ -23,6 +23,17 @@ struct LiftingDiceExercisesContentView: View {
     @State private var viewDidLoad = false
     
     var body: some View {
+        if ($liftingDiceExerciseViewModel.filteredExercises.isEmpty) {
+            VStack {
+                ProgressView().onAppear {
+                    if (viewDidLoad == false) {
+                        liftingDiceExerciseViewModel.startExercisesObserving(selectedMuscleGroups: self.selectedMusleGroups)
+                        viewDidLoad = true
+                    }
+                }
+                Text("Loading exercises and rolls...")
+            }
+        } else {
             VStack {
                 ViewThatFits(in: .vertical) {
                     ScrollView(.vertical) {
@@ -64,13 +75,9 @@ struct LiftingDiceExercisesContentView: View {
                     }
                     .disabled(liftingDiceExerciseViewModel.filteredExercises.count <= 6)
                 }
-        }.onAppear {
-            if (viewDidLoad == false) {
-                liftingDiceExerciseViewModel.startExercisesObserving(selectedMuscleGroups: self.selectedMusleGroups)
-                viewDidLoad = true
+            }.task {
+                await liftingDiceExerciseViewModel.loadAd()
             }
-        }.task {
-            await liftingDiceExerciseViewModel.loadAd()
         }
     }
 }

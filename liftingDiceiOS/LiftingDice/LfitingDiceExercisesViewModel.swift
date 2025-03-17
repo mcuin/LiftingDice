@@ -153,7 +153,6 @@ import GoogleMobileAds
             rewardedAd = try await GADRewardedAd.load(withAdUnitID: Bundle.main.object(forInfoDictionaryKey: "EXERCISE_REROLL_AD_ID") as! String, request: GADRequest())
             rewardedAd?.fullScreenContentDelegate = self
         } catch {
-            adFailedToLoad = true
             print("Failed to load rewarded ad: \(error)")
         }
     }
