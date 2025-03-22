@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.protobuf)
     alias(libs.plugins.seraliziation)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
@@ -76,6 +77,9 @@ dependencies {
     implementation(libs.play.services.ads)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.databse)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.appcheck)
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
     implementation(libs.koin.compose)

@@ -103,7 +103,7 @@ fun EquipmentSettingCard(modifier: Modifier, equipmentSetting: EquipmentSetting,
 
 @Composable
 fun EquipmentSettingFAB(modifier: Modifier, navigateBack: () -> Unit, viewModel: LiftingDiceSettingsViewModel) {
-    FloatingActionButton(modifier = modifier.padding(16.dp), onClick = {
+    FloatingActionButton(modifier = modifier, onClick = {
         viewModel.saveEquipmentSettings()
         navigateBack()
     }, shape = RoundedCornerShape(16.dp)) {

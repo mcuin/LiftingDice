@@ -14,6 +14,10 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.cuinsolutions.liftingdice.android.ui.theme.LiftingDiceTheme
 import com.google.android.gms.ads.MobileAds
+import com.google.firebase.Firebase
+import com.google.firebase.appcheck.appCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
+import com.google.firebase.initialize
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,6 +26,11 @@ import org.koin.android.ext.android.inject
 class LiftingDiceActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Firebase.initialize(context = this)
+        Firebase.appCheck.installAppCheckProviderFactory (
+            PlayIntegrityAppCheckProviderFactory.getInstance()
+        )
 
         var hasEquipmentSettings = false
         val liftingDiceActivityViewModel: LiftingDiceActivityViewModel by inject()
