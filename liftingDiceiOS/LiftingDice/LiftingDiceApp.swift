@@ -1,14 +1,25 @@
 import SwiftUI
 import Firebase
+import FirebaseCore
 import GoogleMobileAds
 import liftingDiceShared
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        FirebaseApp.configure()
+        
+        return true
+    }
+}
 
 @main
 struct iOSApp: App {
     
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
     init() {
         FirebaseHelperKt.doInitKoin()
-        FirebaseApp.configure()
         GADMobileAds.sharedInstance().start(completionHandler: nil)
         GADMobileAds.sharedInstance().applicationMuted = true
     }
@@ -18,7 +29,6 @@ struct iOSApp: App {
     
     var body: some Scene {
         WindowGroup {
-            
             Group {
                 switch (tabSelection) {
                 case "onboarding":

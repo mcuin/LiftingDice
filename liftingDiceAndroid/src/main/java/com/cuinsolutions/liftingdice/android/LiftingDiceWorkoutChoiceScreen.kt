@@ -30,14 +30,13 @@ import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.cuinsolutions.liftingdice.BuildConfig
 import com.cuinsolutions.liftingdice.MuscleGroup
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun LiftingDiceWorkoutChoiceScreen(modifier: Modifier, canNavBack: Boolean, canNavigateToEquipmentSettings: Boolean, navigateBack: () -> Unit, onNavigateToEquipmentSettingsScreen: () -> Unit, onNavigateToExercisesScreen: (List<Int>) -> Unit, viewModel: LiftingDiceWorkoutChoiceScreenViewModel = koinViewModel()) {
 
-    val uiState = viewModel.muscleGroups.collectAsStateWithLifecycle()
+    val uiState = viewModel.muscleGroupsState.collectAsStateWithLifecycle()
 
     Scaffold(modifier = modifier.fillMaxSize(), topBar = { LiftingDiceAppBar(titleId = R.string.app_name, canNavBack = canNavBack, canNavigateToEquipmentSettings = canNavigateToEquipmentSettings, navigateBack = navigateBack, onNavigateToEquipmentSettings = onNavigateToEquipmentSettingsScreen) },
         bottomBar = { BannerAdview(stringResource(R.string.muscle_groups_banner_ad_unit_id)) },

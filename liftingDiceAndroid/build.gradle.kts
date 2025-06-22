@@ -24,8 +24,10 @@ android {
         applicationId = "com.cuinsolutions.liftingdice.android"
         minSdk = 28
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0"
+        versionCode = 3
+        versionName = "1.1"
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildFeatures {
         compose = true
@@ -57,11 +59,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "21"
     }
     ksp {
         arg("KOIN_USE_COMPOSE_VIEWMODEL","true")
@@ -87,6 +89,7 @@ dependencies {
     implementation(libs.koin.compose.navigation)
     implementation(platform(libs.koin.annotations.bom))
     implementation(libs.koin.annotations)
+    implementation(libs.androidx.junit.ktx)
     ksp(libs.koin.compiler)
     implementation(libs.dataStore)
     implementation(libs.protobuf.java)
@@ -96,6 +99,14 @@ dependencies {
     implementation(libs.splashScreen)
     androidTestImplementation(libs.compose.navigation.testing)
     debugImplementation(libs.compose.ui.tooling)
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.mockk)
+    testImplementation(kotlin("test"))
+    testImplementation(libs.koin.test)
+    testImplementation(libs.koin.test.junit5)
+    androidTestImplementation(libs.testRunner)
+    testImplementation(libs.coroutines.test)
 }
 
 protobuf {

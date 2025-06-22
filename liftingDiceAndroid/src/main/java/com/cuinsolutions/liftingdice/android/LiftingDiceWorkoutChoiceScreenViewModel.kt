@@ -11,9 +11,10 @@ import kotlinx.coroutines.flow.stateIn
 
 class LiftingDiceWorkoutChoiceScreenViewModel(private val firebaseRealtimeDatabaseFunctions: FirebaseRealtimeDatabaseFunctions): ViewModel() {
 
-    private val selectedMuscleGroups = MutableStateFlow<List<Int>>(emptyList())
+    val selectedMuscleGroups = MutableStateFlow<List<Int>>(emptyList())
+    val muscleGroups = firebaseRealtimeDatabaseFunctions.getMuscleGroups().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val muscleGroups = combine(firebaseRealtimeDatabaseFunctions.getMuscleGroups(), selectedMuscleGroups) { muscleGroups, selectedMuscleGroups ->
+    val muscleGroupsState = combine(muscleGroups, selectedMuscleGroups) { muscleGroups, selectedMuscleGroups ->
         when {
             muscleGroups.isNotEmpty() -> LiftingDiceWorkoutChoiceScreenState.Success(muscleGroups, selectedMuscleGroups)
             else -> LiftingDiceWorkoutChoiceScreenState.Loading
