@@ -16,8 +16,8 @@ import kotlinx.coroutines.launch
 
 class LiftingDiceSettingsViewModel(private val firebaseRealtimeDatabaseFunctions: FirebaseRealtimeDatabaseFunctions, private val dataStore: DataStore<UserPreferencesOuterClass.UserPreferences>): ViewModel() {
 
-    private val selectedEquipmentIdsFlow = MutableStateFlow<List<Int>>(emptyList())
-
+    val selectedEquipmentIdsFlow = MutableStateFlow<List<Int>>(emptyList())
+    val equipmentSettings = firebaseRealtimeDatabaseFunctions.getEquipmentSettings().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     private val dataStoreFlow = dataStore.data.map { preferences ->
         selectedEquipmentIdsFlow.update { equipmentIds ->
             equipmentIds.toMutableList().also {
@@ -26,7 +26,7 @@ class LiftingDiceSettingsViewModel(private val firebaseRealtimeDatabaseFunctions
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), UserPreferencesOuterClass.UserPreferences.getDefaultInstance())
 
-    val equipmentSettingsUiState = combine(firebaseRealtimeDatabaseFunctions.getEquipmentSettings(), dataStoreFlow, selectedEquipmentIdsFlow) { equipmentSettings, _, selectedEquipmentIds ->
+    val equipmentSettingsUiState = combine(equipmentSettings, dataStoreFlow, selectedEquipmentIdsFlow) { equipmentSettings, _, selectedEquipmentIds ->
         when {
             equipmentSettings.isNotEmpty() -> LiftingDiceSettingsScreenState.Success(equipmentSettings, selectedEquipmentIds)
             else -> LiftingDiceSettingsScreenState.Error
